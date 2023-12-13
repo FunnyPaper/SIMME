@@ -1,8 +1,9 @@
 plugins {
     id("com.android.application")
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization")
+    id("dagger.hilt.android.plugin")
+    kotlin("kapt")
 }
 
 android {
@@ -21,8 +22,10 @@ android {
             useSupportLibrary = true
         }
 
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
         }
     }
 
@@ -75,7 +78,7 @@ dependencies {
     val room = rootProject.extra["room_version"]
     implementation("androidx.room:room-ktx:$room")
     implementation("androidx.room:room-runtime:$room")
-    ksp("androidx.room:room-compiler:$room")
+    kapt("androidx.room:room-compiler:$room")
 
     val navigation = rootProject.extra["navigation_version"]
     implementation("androidx.navigation:navigation-compose:$navigation")
@@ -85,7 +88,7 @@ dependencies {
 
     val hilt = rootProject.extra["hilt_version"]
     implementation("com.google.dagger:hilt-android:$hilt")
-    ksp("com.google.dagger:hilt-android-compiler:$hilt")
+    kapt("com.google.dagger:hilt-android-compiler:$hilt")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     // Multik
