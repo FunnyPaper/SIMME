@@ -91,6 +91,9 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:$hilt")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
+    val coil = rootProject.extra["coil_version"]
+    implementation("io.coil-kt:coil-compose:$coil")
+
     // Multik
     val multik = rootProject.extra["multik_version"]
     implementation("org.jetbrains.kotlinx:multik-core:$multik")

@@ -6,6 +6,7 @@ buildscript {
         set("navigation_version", "2.7.5")
         set("hilt_version", "2.44")
         set("multik_version", "0.2.2")
+        set("coil_version", "2.5.0")
     }
 }
 
