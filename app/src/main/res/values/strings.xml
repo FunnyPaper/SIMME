@@ -2,4 +2,8 @@
     <string name="app_name">SIMME</string>
     <string name="expand_icon">Expand list</string>
     <string name="hide_icon">Hide list</string>
+    <string name="project_image">Image associated with project</string>
+    <string name="export_icon">Export project</string>
+    <string name="import_icon">Import project</string>
+    <string name="delete_icon">Delete project</string>
 </resources>
