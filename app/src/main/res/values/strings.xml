@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SIMME</string>
+    <string name="expand_icon">Expand list</string>
+    <string name="hide_icon">Hide list</string>
 </resources>
