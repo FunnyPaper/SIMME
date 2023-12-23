@@ -1,19 +1,14 @@
 package com.funnypaper.simme.domain
 
-@JvmInline
-value class PointModel(val data: MutableList<Float>) {
-    init {
-        require(data.size == 2)
-    }
-    var x: Float
-        get() = data[0]
-        set(value) {
-            data[0] = value
-        }
+data class PointModel(
+    val x: Float,
+    val y: Float
+) {
+    override fun toString(): String = "$x,$y"
 
-    var y: Float
-        get() = data[1]
-        set(value) {
-            data[1] = value
-        }
+    companion object {
+        fun fromString(value: String) = value
+            .split(",")
+            .let { PointModel(it[0].toFloat(), it[1].toFloat()) }
+    }
 }

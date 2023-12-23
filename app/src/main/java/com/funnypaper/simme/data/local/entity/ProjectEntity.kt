@@ -1,15 +1,13 @@
-package com.funnypaper.simme.data.entity
+package com.funnypaper.simme.data.local.entity
 
-import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(tableName = "projects")
 data class ProjectEntity(
-    @PrimaryKey
-    val id: UUID = UUID.randomUUID(),
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     @ColumnInfo(name = "thumbnail_path")
     val thumbnailPath: String,
     val title: String,
@@ -19,9 +17,5 @@ data class ProjectEntity(
     val startOffset: Int,
     val bmp: Int,
     @ColumnInfo(name = "audio_path")
-    val audioPath: Uri,
-    val board: BoardEntity,
-    val ranks: List<RankEntity>,
-    @ColumnInfo(name = "meta_data")
-    val metaData: List<MetaDataEntity>
+    val audioPath: String,
 )

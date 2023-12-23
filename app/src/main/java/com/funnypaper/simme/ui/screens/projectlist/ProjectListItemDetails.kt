@@ -18,31 +18,31 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.funnypaper.simme.R
 
-@Composable
-fun ProjectListItemDetails(
-    item: ProjectItemDetailsUIState,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier
-    ) {
-        val pendingPainter = rememberVectorPainter(image = Icons.Filled.Pending)
-        val errorPainter = rememberVectorPainter(image = Icons.Filled.BrokenImage)
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(item.thumbnailUri)
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(id = R.string.project_image),
-            contentScale = ContentScale.Crop,
-            placeholder = pendingPainter,
-            error = errorPainter,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-        )
-    }
-}
+//@Composable
+//fun ProjectListItemDetails(
+//    item: ProjectItemDetailsUIState,
+//    modifier: Modifier = Modifier,
+//) {
+//    Card(
+//        modifier = modifier
+//    ) {
+//        val pendingPainter = rememberVectorPainter(image = Icons.Filled.Pending)
+//        val errorPainter = rememberVectorPainter(image = Icons.Filled.BrokenImage)
+//        AsyncImage(
+//            model = ImageRequest.Builder(LocalContext.current)
+//                .data(item.thumbnailUri)
+//                .crossfade(true)
+//                .build(),
+//            contentDescription = stringResource(id = R.string.project_image),
+//            contentScale = ContentScale.Crop,
+//            placeholder = pendingPainter,
+//            error = errorPainter,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .aspectRatio(1f)
+//        )
+//    }
+//}
 
 @Preview
 @Composable
