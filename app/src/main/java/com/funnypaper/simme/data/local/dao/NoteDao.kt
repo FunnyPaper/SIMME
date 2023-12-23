@@ -5,16 +5,17 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.funnypaper.simme.data.local.entity.NoteEntity
 import com.funnypaper.simme.data.local.relation.NoteRelation
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao : ICRUDDao<NoteEntity> {
     @Query("SELECT * FROM notes WHERE id = :value")
-    suspend fun getNoteById(value: Int): NoteEntity
+    fun getNoteById(value: Int): Flow<NoteEntity>
 
     @Transaction
     @Query("SELECT * FROM notes WHERE id = :value")
-    suspend fun getNoteRelationById(value: Int): NoteRelation
+    fun getNoteRelationById(value: Int): Flow<NoteRelation>
 
     @Query("SELECT * FROM notes")
-    suspend fun getNotes(): List<NoteEntity>
+    fun getNotes(): Flow<List<NoteEntity>>
 }

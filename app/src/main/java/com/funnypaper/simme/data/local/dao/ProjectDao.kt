@@ -5,16 +5,17 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.funnypaper.simme.data.local.entity.ProjectEntity
 import com.funnypaper.simme.data.local.relation.ProjectRelation
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProjectDao : ICRUDDao<ProjectEntity> {
     @Query("SELECT * FROM projects WHERE id = :value")
-    suspend fun getProjectById(value: Int): ProjectEntity
+    fun getProjectById(value: Int): Flow<ProjectEntity>
 
     @Transaction
     @Query("SELECT * FROM projects WHERE id = :value")
-    suspend fun getProjectRelationById(value: Int): ProjectRelation
+    fun getProjectRelationById(value: Int): Flow<ProjectRelation>
 
     @Query("SELECT * FROM projects")
-    suspend fun getProjects(): List<ProjectEntity>
+    fun getProjects(): Flow<List<ProjectEntity>>
 }

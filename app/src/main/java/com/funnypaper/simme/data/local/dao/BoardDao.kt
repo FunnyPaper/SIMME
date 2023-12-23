@@ -5,16 +5,17 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.funnypaper.simme.data.local.entity.BoardEntity
 import com.funnypaper.simme.data.local.relation.BoardRelation
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BoardDao : ICRUDDao<BoardEntity> {
     @Query("SELECT * FROM boards WHERE id = :value")
-    suspend fun getBoardById(value: Int): BoardEntity
+    fun getBoardById(value: Int): Flow<BoardEntity>
 
     @Transaction
     @Query("SELECT * FROM boards WHERE id = :value")
-    suspend fun getBoardRelationById(value: Int): BoardRelation
+    fun getBoardRelationById(value: Int): Flow<BoardRelation>
 
     @Query("SELECT * FROM boards")
-    suspend fun getBoards(): List<BoardEntity>
+    fun getBoards(): Flow<List<BoardEntity>>
 }
