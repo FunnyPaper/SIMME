@@ -6,9 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.funnypaper.simme.domain.PointModel
-import java.util.UUID
+import com.funnypaper.simme.domain.model.PointModel
 
 @Entity(
     tableName = "boards",

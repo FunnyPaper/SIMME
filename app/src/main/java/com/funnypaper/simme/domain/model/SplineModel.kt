@@ -1,4 +1,4 @@
-package com.funnypaper.simme.domain
+package com.funnypaper.simme.domain.model
 
 data class SplineModel(
     val points: MutableList<PointModel>

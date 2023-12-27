@@ -35,8 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -48,10 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.funnypaper.simme.ui.shared.extensions.getFilename
-import org.jetbrains.kotlinx.multik.api.linalg.dot
-import org.jetbrains.kotlinx.multik.api.mk
-import org.jetbrains.kotlinx.multik.api.ndarray
-import org.jetbrains.kotlinx.multik.ndarray.data.get
+import com.funnypaper.simme.ui.shared.extensions.scaleNumber
 
 @Composable
 fun AudioVisualizer(
@@ -121,10 +121,10 @@ fun AudioVisualizer(
 @Composable
 fun AudioVisualizer(
     data: List<Float>,
-    onHorizontalDragStart: (Float) -> Unit,
-    onHorizontalDragEnd: () -> Unit,
-    onHorizontalDrag: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    onHorizontalDragStart: (Float) -> Unit = {},
+    onHorizontalDragEnd: () -> Unit = {},
+    onHorizontalDrag: (Float) -> Unit = {},
     outlineWidth: Dp = AudioVisualizerDefaults.OutlineWidth,
     binCount: Int = AudioVisualizerDefaults.BinCount,
     binWidth: Float = AudioVisualizerDefaults.BinWidth,
@@ -149,17 +149,18 @@ fun AudioVisualizer(
     val max = remember(binData) { binData.max() }
 
     // Canvas
-    var size by remember { mutableStateOf(Size(0f, 0f)) }
+    var size by remember { mutableStateOf(Size.Zero) }
     val gapSize = remember(size, binData) { size.width / (binData.size + 1) }
     val halfHeight = remember(size) { size.height / 2 }
     val transformation = remember(halfHeight) {
         // Flip by X axis and move origin to middle left
-        mk.ndarray(
-            listOf(
-                1f, 0f, 0f,
-                0f, -1f, halfHeight,
-                0f, 0f, 1f
-            ), 3, 3
+        Matrix(
+            floatArrayOf(
+                1f, 0f, 0f, 0f,
+                0f, -1f, 0f, 0f,
+                0f, 0f, 1f, 0f,
+                0f, halfHeight, 0f, 1f
+            )
         )
     }
 
@@ -168,12 +169,12 @@ fun AudioVisualizer(
         binData.mapIndexed { index, value ->
             val x = (index + 1) * gapSize
             val y = value.scaleNumber(min, max, 1f, halfHeight)
-            val tt1 = transformation.dot(mk.ndarray(listOf(x, y, 1f)))
-            val tt2 = transformation.dot(mk.ndarray(listOf(x, -y, 1f)))
+            val tt1 = transformation.map(Offset(x, y))
+            val tt2 = transformation.map(Offset(x, -y))
 
             Path().apply {
-                moveTo(tt1[0], tt1[1])
-                lineTo(tt2[0], tt2[1])
+                moveTo(tt1.x, tt1.y)
+                lineTo(tt2.x, tt2.y)
             }
         }
     }
@@ -235,9 +236,6 @@ fun AudioVisualizer(
         }
     }
 }
-
-fun Float.scaleNumber(oldMin: Float, oldMax: Float, newMin: Float, newMax: Float)
-    = ((this - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin
 @Immutable
 class AudioVisualizerColors internal constructor(
     private val resumedContainerColor: Color,

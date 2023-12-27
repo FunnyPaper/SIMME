@@ -6,4 +6,12 @@
     <string name="export_icon">Export project</string>
     <string name="import_icon">Import project</string>
     <string name="delete_icon">Delete project</string>
+    <string name="audio_section">Audio</string>
+    <string name="ranks_section">Ranks</string>
+    <string name="board_section">Board</string>
+    <string name="meta_section">Meta data</string>
+    <string name="rank_image">Rank image</string>
+    <string name="description_section">Description</string>
+    <string name="time_offset_label">Start offset: %s</string>
+    <string name="details_section">Details</string>
 </resources>

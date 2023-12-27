@@ -94,11 +94,6 @@ dependencies {
     val coil = rootProject.extra["coil_version"]
     implementation("io.coil-kt:coil-compose:$coil")
 
-    // Multik
-    val multik = rootProject.extra["multik_version"]
-    implementation("org.jetbrains.kotlinx:multik-core:$multik")
-    implementation("org.jetbrains.kotlinx:multik-kotlin:$multik")
-
     // Tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

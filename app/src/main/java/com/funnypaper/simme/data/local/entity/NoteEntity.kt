@@ -1,14 +1,10 @@
 package com.funnypaper.simme.data.local.entity
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
-import com.funnypaper.simme.domain.SplineModel
-import java.util.UUID
 
 @Entity(
     tableName = "notes",

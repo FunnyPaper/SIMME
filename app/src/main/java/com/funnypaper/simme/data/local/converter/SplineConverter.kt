@@ -1,7 +1,7 @@
 package com.funnypaper.simme.data.local.converter
 
 import androidx.room.TypeConverter
-import com.funnypaper.simme.domain.SplineModel
+import com.funnypaper.simme.domain.model.SplineModel
 
 class SplineConverter {
     @TypeConverter

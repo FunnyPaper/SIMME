@@ -5,8 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.funnypaper.simme.domain.SplineModel
-import java.util.UUID
+import com.funnypaper.simme.domain.model.SplineModel
 
 @Entity(
     tableName = "splines",
