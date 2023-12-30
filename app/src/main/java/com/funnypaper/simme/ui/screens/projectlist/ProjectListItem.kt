@@ -73,8 +73,6 @@ private object AnimationLabels {
 @Composable
 fun ProjectListItem(
     item: ProjectItemUIState,
-    onExportButtonClick: (Int) -> Unit,
-    onDiscardButtonClick: (Int) -> Unit,
     onListItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,26 +152,6 @@ fun ProjectListItem(
                     modifier = Modifier.weight(1f)
                 )
             }
-
-            Row {
-                IconButton(
-                    onClick = { onExportButtonClick(item.id) },
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Upload,
-                        contentDescription = stringResource(id = R.string.export_icon)
-                    )
-                }
-
-                IconButton(
-                    onClick = { onDiscardButtonClick(item.id) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.DeleteForever,
-                        contentDescription = stringResource(id = R.string.delete_icon)
-                    )
-                }
-            }
         }
     }
 }
@@ -194,8 +172,6 @@ fun ProjectListItemPreview() {
                     title = "project_title",
                     selected = selected
                 ),
-                onExportButtonClick = {},
-                onDiscardButtonClick = {},
                 onListItemClick = { selected = !selected }
             )
         }

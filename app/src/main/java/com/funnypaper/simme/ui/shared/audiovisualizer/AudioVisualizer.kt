@@ -50,8 +50,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.funnypaper.simme.ui.shared.extensions.getFilename
-import com.funnypaper.simme.ui.shared.extensions.scaleNumber
+import com.funnypaper.simme.domain.extensions.getFilename
+import com.funnypaper.simme.domain.extensions.scaleNumber
 
 @Composable
 fun AudioVisualizer(

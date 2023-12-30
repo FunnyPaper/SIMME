@@ -1,4 +1,4 @@
-package com.funnypaper.simme.ui.shared.extensions
+package com.funnypaper.simme.domain.extensions
 
 import android.content.ContentResolver
 import android.net.Uri

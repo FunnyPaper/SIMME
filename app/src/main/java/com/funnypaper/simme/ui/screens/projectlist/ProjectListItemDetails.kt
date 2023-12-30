@@ -1,36 +1,40 @@
 package com.funnypaper.simme.ui.screens.projectlist
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Adjust
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.Height
 import androidx.compose.material.icons.filled.Pending
+import androidx.compose.material.icons.filled.Start
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,81 +45,137 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.funnypaper.simme.R
+import com.funnypaper.simme.domain.extensions.formatMillis
 import com.funnypaper.simme.domain.model.AudioFileModel
 import com.funnypaper.simme.domain.model.BoardModel
 import com.funnypaper.simme.domain.model.MetaDataModel
 import com.funnypaper.simme.domain.model.PointModel
 import com.funnypaper.simme.domain.model.RankModel
+import com.funnypaper.simme.domain.model.TimingModel
 import com.funnypaper.simme.ui.shared.audiovisualizer.AudioVisualizer
-import com.funnypaper.simme.ui.shared.extensions.formatMillis
-import com.funnypaper.simme.ui.shared.extensions.getFilename
-import com.funnypaper.simme.ui.shared.treelist.TreeList
-import com.funnypaper.simme.ui.shared.treelist.TreeListItem
+import com.funnypaper.simme.ui.shared.rank.RankCard
+import com.funnypaper.simme.ui.shared.treelist.Expander
 import com.funnypaper.simme.ui.theme.SIMMETheme
 import kotlin.math.min
-import kotlin.random.Random
 
 @Composable
 fun ProjectListItemDetails(
     item: ProjectItemDetailsUIState,
     modifier: Modifier = Modifier,
+    isFullScreen: Boolean = false,
+    onBackPressed: () -> Unit = {},
 ) {
-    Card(
-        modifier = modifier.verticalScroll(rememberScrollState())
-    ) {
-        DetailsHeader(
-            thumbnailUri = item.thumbnailUri,
-            title = item.title,
-            author = item.author,
-        )
+    val container = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = .18f)
+    val content = contentColorFor(backgroundColor = container)
+    val spacing = dimensionResource(id = R.dimen.card_spacing)
 
-        DescriptionSection(description = item.description)
-        BoardSection(board = item.board)
-        AudioSection(bmp = item.bmp, startOffset = item.startOffset, audio = item.audio)
-        RanksSection(ranks = item.ranks)
-        MetaDataSection(metaData = item.metaData)
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(spacing)
+    ) {
+        if(isFullScreen) {
+            ProjectListItemDetailsTopBar(onBackPressed = onBackPressed)
+        } else {
+            BackHandler {
+                onBackPressed()
+            }
+        }
+
+        Card(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            colors = CardDefaults.cardColors(
+                containerColor = container,
+                contentColor = content
+            )
+        ) {
+            DetailsHeader(
+                thumbnailUri = item.thumbnailUri,
+                title = item.title,
+                author = item.author,
+                spacing = spacing
+            )
+
+            DescriptionSection(description = item.description)
+            BoardSection(board = item.board, contentColor = content, spacing = spacing)
+            TimingSection(timing = item.timing, spacing = spacing)
+            AudioSection(audio = item.audio, spacing = spacing)
+            RanksSection(ranks = item.ranks, spacing = spacing)
+            MetaDataSection(metaData = item.metaData)
+        }
+    }
+}
+
+@Composable
+fun ProjectListItemDetailsTopBar(
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        IconButton(
+            onClick = onBackPressed,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = stringResource(id = R.string.navigation_back)
+            )
+        }
+        Text(
+            text = stringResource(id = R.string.screen_list_item_details),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
 @Composable
 private fun DescriptionSection(
-    description: String
+    description: String,
+    modifier: Modifier = Modifier,
 ) {
-    DetailsSection(stringResource(id = R.string.description_section)) {
+    Expander(stringResource(id = R.string.description_section), modifier = modifier) {
         Text(text = description, style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable
 private fun BoardSection(
-    board: BoardModel
+    board: BoardModel,
+    contentColor: Color,
+    spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    DetailsSection(stringResource(id = R.string.board_section)) {
+    Expander(stringResource(id = R.string.board_section), modifier = modifier) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(spacing)
         ) {
-            BoardVisualizer(
+            BoardControl(
                 board = board,
+                contentColor = contentColor,
                 modifier = Modifier
                     .fillMaxHeight()
                     .aspectRatio(1f)
             )
             Column {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -123,15 +183,15 @@ private fun BoardSection(
                         contentDescription = null
                     )
                     Text(text = "${board.origin.x}")
-                    Canvas(modifier = Modifier.size(8.dp)) {
+                    Canvas(modifier = Modifier.size(spacing)) {
                         size.toRect().let {
-                            drawLine(Color.Black, it.topLeft, it.bottomRight, 4f)
-                            drawLine(Color.Black, it.bottomLeft, it.topRight, 4f)
+                            drawLine(contentColor, it.topLeft, it.bottomRight, 4f)
+                            drawLine(contentColor, it.bottomLeft, it.topRight, 4f)
                         }
                     }
                     Text(text = "${board.origin.y}")
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
                     Icon(
                         imageVector = Icons.Filled.Height,
                         contentDescription = null,
@@ -139,7 +199,7 @@ private fun BoardSection(
                     )
                     Text(text = "${board.width}")
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
                     Icon(imageVector = Icons.Filled.Height, contentDescription = null)
                     Text(text = "${board.height}")
                 }
@@ -149,20 +209,22 @@ private fun BoardSection(
 }
 
 @Composable
-fun BoardVisualizer(
+private fun BoardControl(
     board: BoardModel,
+    contentColor: Color,
     modifier: Modifier = Modifier,
 ) {
     Canvas(
         modifier = modifier
             .background(Color.White)
-            .border(1.dp, Color.Black)
+            .border(1.dp, contentColor)
     ) {
         size.toRect().deflate(size.height / 6f).let {
-            val maxX = min(it.size.width, board.width)
-            val maxY = min(it.size.height, board.height)
             // Fit ratio
-            val ratio = min(maxX / board.width, maxY / board.height)
+            val ratio = min(
+                it.size.width / board.width,
+                it.size.height / board.height
+            )
             val height = ratio * board.height
             val width = ratio * board.width
 
@@ -171,12 +233,14 @@ fun BoardVisualizer(
                 Size(width, height)
             )
 
+            // Projected board space
             drawRect(
                 color = Color.LightGray,
                 topLeft = boardRect.topLeft,
                 size = boardRect.size,
             )
 
+            // Boundaries for projected board
             drawRect(
                 color = Color.Black,
                 topLeft = it.topLeft,
@@ -190,63 +254,46 @@ fun BoardVisualizer(
 
             val x = it.center.x + board.origin.x * ratio
             val y = it.center.y - board.origin.y * ratio
+            // Origin point
             drawCircle(color = Color.Black, radius = 12f, center = Offset(x, y))
+            // X axis
             drawLine(Color.Black, start = Offset(x, 0f), end = Offset(x, size.height))
+            // Y axis
             drawLine(Color.Black, start = Offset(0f, y), end = Offset(size.width, y))
         }
     }
 }
 
 @Composable
-private fun AudioSection(
-    bmp: Int,
-    startOffset: Int,
-    audio: AudioFileModel
+private fun TimingSection(
+    timing: TimingModel,
+    spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    DetailsSection(stringResource(id = R.string.audio_section)) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Expander(stringResource(id = R.string.timing_section), modifier = modifier) {
+        Column {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(spacing)
             ) {
-                Column {
-                    Text(text = "BMP: $bmp", style = MaterialTheme.typography.labelMedium)
-                    Text(
-                        text = stringResource(id = R.string.time_offset_label, startOffset),
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-
-                Text(text = audio.millis.formatMillis(), style = MaterialTheme.typography.labelMedium)
+                Icon(imageVector = Icons.Filled.Adjust, contentDescription = null)
+                Text(
+                    text = stringResource(id = R.string.time_bpm_label, timing.bpm),
+                )
             }
-            AudioVisualizer(
-                data = audio.pcm,
-                modifier = Modifier.fillMaxWidth()
-            )
-            audio.audioUri.getFilename(LocalContext.current.contentResolver)?.let {
-                Text(text = it)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(spacing)
+            ) {
+                Icon(imageVector = Icons.Filled.Start, contentDescription = null)
+                Text(
+                    text = timing.offset.formatMillis(),
+                )
             }
-        }
-    }
-}
-
-@Composable
-private fun RanksSection(
-    ranks: List<RankModel>
-) {
-    DetailsSection(stringResource(id = R.string.ranks_section)) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-        ) {
-            ranks.forEach {
-                RankCard(
-                    uri = it.thumbnailUri,
-                    points = it.requiredPoint.toString(),
-                    name = it.name
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(spacing)
+            ) {
+                Icon(imageVector = Icons.Filled.AccessTime, contentDescription = null)
+                Text(
+                    text = timing.duration.formatMillis(),
                 )
             }
         }
@@ -254,10 +301,48 @@ private fun RanksSection(
 }
 
 @Composable
-private fun MetaDataSection(
-    metaData: List<MetaDataModel>
+private fun AudioSection(
+    audio: AudioFileModel?,
+    spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    DetailsSection(stringResource(id = R.string.meta_section)) {
+    Expander(stringResource(id = R.string.audio_section), modifier = modifier) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacing),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (audio != null) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = audio.name,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                    Text(
+                        text = audio.millis.formatMillis(),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+                AudioVisualizer(
+                    data = audio.pcm,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                Text(text = stringResource(id = R.string.null_audio))
+            }
+        }
+    }
+}
+
+@Composable
+private fun MetaDataSection(
+    metaData: List<MetaDataModel>,
+    modifier: Modifier = Modifier,
+) {
+    Expander(stringResource(id = R.string.meta_section), modifier = modifier) {
         Column {
             metaData.forEachIndexed { index, entry ->
                 Text(
@@ -274,10 +359,14 @@ private fun DetailsHeader(
     thumbnailUri: Uri,
     title: String,
     author: String,
+    spacing: Dp,
+    modifier: Modifier = Modifier,
     pendingPainter: Painter = rememberVectorPainter(image = Icons.Filled.Pending),
     errorPainter: Painter = rememberVectorPainter(image = Icons.Filled.BrokenImage),
 ) {
-    Row {
+    Row(
+        modifier = modifier
+    ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(thumbnailUri)
@@ -295,7 +384,7 @@ private fun DetailsHeader(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(8.dp)
+                .padding(spacing)
         ) {
             Text(text = title, style = MaterialTheme.typography.headlineMedium)
             Text(text = author)
@@ -304,87 +393,48 @@ private fun DetailsHeader(
 }
 
 @Composable
-private fun DetailsSection(
-    label: String,
+private fun RanksSection(
+    ranks: List<RankModel>,
+    spacing: Dp,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit = {},
 ) {
-    TreeList(
-        treeListItem = TreeListItem(
-            content = {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelLarge
+    Expander(stringResource(id = R.string.ranks_section), modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+        ) {
+            ranks.forEach {
+                RankCard(
+                    uri = it.thumbnailUri,
+                    points = it.requiredPoint.toString(),
+                    name = it.name,
+                    modifier = Modifier.width(64.dp)
                 )
-            },
-            children = listOf(
-                TreeListItem(content = content)
-            )
-        ),
-        childPadding = 8.dp,
-        modifier = modifier.height(IntrinsicSize.Max)
-    )
-}
-
-@Composable
-private fun RankCard(
-    uri: Uri,
-    points: String,
-    name: String,
-    pendingPainter: Painter = rememberVectorPainter(image = Icons.Filled.Pending),
-    errorPainter: Painter = rememberVectorPainter(image = Icons.Filled.BrokenImage),
-) {
-    Card(
-        shape = RectangleShape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(uri)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = stringResource(id = R.string.rank_image),
-                contentScale = ContentScale.Crop,
-                placeholder = pendingPainter,
-                error = errorPainter,
-                modifier = Modifier
-                    .width(48.dp)
-                    .aspectRatio(1f)
-            )
-            Text(
-                text = points,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-            )
-            Text(
-                text = name,
-                style = MaterialTheme.typography.bodySmall
-            )
+            }
         }
     }
 }
 
-@Preview
+@Preview(device = "id:pixel_5")
 @Composable
 fun ProjectListItemDetailsPreview() {
     SIMMETheme {
         Surface {
             ProjectListItemDetails(
+                isFullScreen = true,
                 item = ProjectItemDetailsUIState(
                     thumbnailUri = Uri.EMPTY,
                     title = "title",
                     description = "description",
                     author = "author",
-                    startOffset = 0,
-                    bmp = 152,
-                    audio = AudioFileModel(
-                        audioUri = Uri.EMPTY,
-                        pcm = List(1024) { Random.nextFloat() * 1000 },
-                        millis = ((1 * 60 + 3) * 60 + 23) * 1000,
+                    timing = TimingModel(
+                        bpm = 152,
+                        millis = (3 * 60 + 23) * 1000,
+                        offset = 0
                     ),
+                    audio = null,
                     board = BoardModel(PointModel(-500f, -220f), 1920f, 1080f),
                     metaData = listOf(MetaDataModel("META 1"), MetaDataModel("META 2")),
                     ranks = List(3) { RankModel("name $it", it, Uri.EMPTY) }

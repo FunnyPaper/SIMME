@@ -5,6 +5,7 @@ import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
@@ -30,12 +31,16 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,16 +58,16 @@ import com.funnypaper.simme.ui.theme.SIMMETheme
  * Helper holder for creating tree structure that can be passed to [TreeList] component
  * @param children Nested tree nodes containing composable contents
  * @param content Content of the current tree node
+ * @param childrenHidden Is children hidden
+ * @param toggleVisibility Callback that is to be called in case of visibility change action
  */
+@Stable
 data class TreeListItem(
     val children: List<TreeListItem>? = null,
+    val childrenHidden: MutableState<Boolean> = mutableStateOf(false),
+    val toggleVisibility: () -> Unit = { childrenHidden.value = !childrenHidden.value },
     val content: @Composable () -> Unit,
-) {
-    /**
-     * Should content of the children hide or show
-     */
-    internal var childrenHidden: Boolean by mutableStateOf(false)
-}
+)
 
 /**
  * Component allowing to lay children in nested structure similar to folder tree list
@@ -90,7 +95,7 @@ fun TreeList(
             treeListItem = treeListItem,
             expandIcon = expandIcon,
             hideIcon = hideIcon,
-            toggleVisibility = { it.childrenHidden = !it.childrenHidden },
+            toggleVisibility = { it.toggleVisibility() },
             // Root node should always be present
             hidden = false,
             childPadding = childPadding,
@@ -115,13 +120,11 @@ private fun Node(
         enter = slideIn(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) {
             IntOffset(-it.width, 0)
         },
-        exit = slideOut(tween(500, 0, EaseInOutCubic)) {
-            IntOffset(-it.width, 0)
-        }
+        exit = shrinkVertically(tween(500, 0, EaseInOutCubic))
     ) {
         val fullHidden by remember {
             derivedStateOf {
-                treeListItem.childrenHidden || treeListItem.children == null
+                treeListItem.childrenHidden.value || treeListItem.children == null
             }
         }
         val contentColor = colors.nodeContentColor(expanded = !fullHidden).value
@@ -155,9 +158,9 @@ private fun Node(
                         onClick = { toggleVisibility(treeListItem) }
                     ) {
                         Icon(
-                            imageVector = if(treeListItem.childrenHidden) expandIcon else hideIcon,
+                            imageVector = if(treeListItem.childrenHidden.value) expandIcon else hideIcon,
                             contentDescription = stringResource(
-                                id = if(treeListItem.childrenHidden)
+                                id = if(treeListItem.childrenHidden.value)
                                     R.string.expand_icon
                                 else
                                     R.string.hide_icon
@@ -177,7 +180,7 @@ private fun Node(
             hideIcon = hideIcon,
             toggleVisibility = toggleVisibility,
             // Hidden property should cascade to children
-            hidden = treeListItem.childrenHidden || hidden,
+            hidden = treeListItem.childrenHidden.value || hidden,
             childPadding = childPadding,
             depth = depth + 1,
             colors = colors

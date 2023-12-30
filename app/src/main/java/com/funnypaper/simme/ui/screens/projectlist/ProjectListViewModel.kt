@@ -8,6 +8,7 @@ import com.funnypaper.simme.domain.model.BoardModel
 import com.funnypaper.simme.domain.model.MetaDataModel
 import com.funnypaper.simme.domain.model.PointModel
 import com.funnypaper.simme.domain.model.RankModel
+import com.funnypaper.simme.domain.model.TimingModel
 
 class ProjectListViewModel: ViewModel() {
 
@@ -18,9 +19,8 @@ data class ProjectItemDetailsUIState(
     val title: String,
     val description: String,
     val author: String,
-    val startOffset: Int,
-    val bmp: Int,
-    val audio: AudioFileModel,
+    val timing: TimingModel,
+    val audio: AudioFileModel?,
     val board: BoardModel,
     val metaData: List<MetaDataModel>,
     val ranks: List<RankModel>

@@ -1,4 +1,4 @@
-package com.funnypaper.simme.ui.shared.extensions
+package com.funnypaper.simme.domain.extensions
 
 fun Float.scaleNumber(oldMin: Float, oldMax: Float, newMin: Float, newMax: Float)
         = ((this - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin

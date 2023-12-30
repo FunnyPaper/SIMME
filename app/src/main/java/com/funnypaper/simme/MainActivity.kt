@@ -4,23 +4,19 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
 import com.funnypaper.simme.data.local.dao.ProjectDao
 import com.funnypaper.simme.domain.model.AudioFileModel
 import com.funnypaper.simme.domain.model.BoardModel
 import com.funnypaper.simme.domain.model.MetaDataModel
 import com.funnypaper.simme.domain.model.PointModel
 import com.funnypaper.simme.domain.model.RankModel
+import com.funnypaper.simme.domain.model.TimingModel
 import com.funnypaper.simme.ui.screens.projectlist.ProjectItemDetailsUIState
 import com.funnypaper.simme.ui.screens.projectlist.ProjectListItemDetails
-import com.funnypaper.simme.ui.shared.audiovisualizer.AudioVisualizer
 import com.funnypaper.simme.ui.theme.SIMMETheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -37,15 +33,20 @@ class MainActivity : ComponentActivity() {
                     contentColor = MaterialTheme.colorScheme.onBackground
                 ) {
                     ProjectListItemDetails(
+                        isFullScreen = true,
                         item = ProjectItemDetailsUIState(
                             thumbnailUri = Uri.EMPTY,
                             title = "title",
                             description = "description",
                             author = "author",
-                            startOffset = 0,
-                            bmp = 152,
+                            timing = TimingModel(
+                                bpm = 152,
+                                millis = (3 * 60 + 23) * 1000,
+                                offset = 0
+                            ),
                             audio = AudioFileModel(
-                                audioUri = Uri.EMPTY,
+                                name = "Test Audio",
+                                uri = Uri.EMPTY,
                                 pcm = List(1024) { Random.nextFloat() * 1000 },
                                 millis = ((1 * 60 + 3) * 60 + 23) * 1000,
                             ),

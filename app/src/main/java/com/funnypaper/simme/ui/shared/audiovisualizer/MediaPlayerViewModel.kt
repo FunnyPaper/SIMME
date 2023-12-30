@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.funnypaper.simme.ui.shared.extensions.progression
-import com.funnypaper.simme.ui.shared.extensions.setUri
+import com.funnypaper.simme.domain.extensions.progression
+import com.funnypaper.simme.domain.extensions.setUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers

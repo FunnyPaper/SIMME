@@ -5,7 +5,7 @@ import android.media.MediaCodec.BufferInfo
 import android.media.MediaCodecList
 import android.media.MediaExtractor
 import android.media.MediaFormat
-import com.funnypaper.simme.ui.shared.extensions.getAudioTrackIndex
+import com.funnypaper.simme.domain.extensions.getAudioTrackIndex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.math.sqrt
