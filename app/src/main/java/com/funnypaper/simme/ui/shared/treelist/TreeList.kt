@@ -9,6 +9,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -141,6 +143,7 @@ private fun Node(
                     // Make rows as tall as expand more/less icon buttons
                     .height(IntrinsicSize.Min)
                     .background(containerColor)
+                    .clickable { toggleVisibility(treeListItem) }
                     .padding(start = childPadding * depth)
             ) {
                 Box(
@@ -154,8 +157,9 @@ private fun Node(
 
                 // Show expand / hide action if content has children
                 if (treeListItem.children != null) {
-                    IconButton(
-                        onClick = { toggleVisibility(treeListItem) }
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if(treeListItem.childrenHidden.value) expandIcon else hideIcon,

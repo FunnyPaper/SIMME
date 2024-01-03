@@ -7,7 +7,7 @@ import androidx.room.Update
 
 interface ICRUDDao<T> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(value: T)
+    suspend fun insert(value: T): Long
 
     @Delete
     suspend fun delete(value: T)

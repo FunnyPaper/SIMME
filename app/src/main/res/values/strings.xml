@@ -17,9 +17,15 @@
     <string name="timing_section">Timing</string>
     <string name="time_duration_label">Duration: %s</string>
     <string name="time_bpm_label">%s bpm</string>
-    <string name="null_audio">Audio file not selected</string>
+    <string name="null_audio">No audio file</string>
     <string name="navigation_back">Go to prevoius screen</string>
     <string name="screen_list_item_details">Project details</string>
     <string name="import_project">Import project</string>
     <string name="create_project">Create project</string>
+    <string name="empty_metadata">No metadata</string>
+    <string name="empty_ranks">No ranks</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_delete_project_title">Delete %s</string>
+    <string name="dialog_delete_project_text">This action will delete %s permanently. Do you still want to proceed?</string>
+    <string name="dialog_dismiss">Dismiss</string>
 </resources>

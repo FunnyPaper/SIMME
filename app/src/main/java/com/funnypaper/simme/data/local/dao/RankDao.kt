@@ -11,5 +11,5 @@ interface RankDao : ICRUDDao<RankEntity> {
     fun getRankById(value: Int): Flow<RankEntity>
 
     @Query("SELECT * FROM ranks")
-    fun getRanks(): Flow<List<RankEntity>>
+    fun getAllRanks(): Flow<List<RankEntity>>
 }

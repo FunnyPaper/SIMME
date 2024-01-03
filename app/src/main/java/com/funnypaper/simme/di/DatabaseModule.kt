@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.funnypaper.simme.data.local.SIMMEDatabase
 import com.funnypaper.simme.data.local.dao.BoardDao
+import com.funnypaper.simme.data.local.dao.MetaDataDao
 import com.funnypaper.simme.data.local.dao.NoteDao
 import com.funnypaper.simme.data.local.dao.ProjectDao
 import com.funnypaper.simme.data.local.dao.RankDao
@@ -51,4 +52,8 @@ object DatabaseModule {
     @Provides
     fun provideSplineDao(database: SIMMEDatabase): SplineDao =
         database.splineDao()
+
+    @Provides
+    fun provideMetaDataDao(database: SIMMEDatabase): MetaDataDao =
+        database.metaDataDao()
 }

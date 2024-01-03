@@ -17,5 +17,5 @@ interface ProjectDao : ICRUDDao<ProjectEntity> {
     fun getProjectRelationById(value: Int): Flow<ProjectRelation>
 
     @Query("SELECT * FROM projects")
-    fun getProjects(): Flow<List<ProjectEntity>>
+    fun getAllProjects(): Flow<List<ProjectEntity>>
 }

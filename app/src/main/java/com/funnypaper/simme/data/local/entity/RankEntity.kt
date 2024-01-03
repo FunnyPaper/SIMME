@@ -29,5 +29,10 @@ data class RankEntity(
     @ColumnInfo(name = "required_points")
     val requiredPoint: Int,
     @ColumnInfo(name = "thumbnail_path")
-    val thumbnailPath: String
-)
+    val thumbnailPath: String?
+) {
+    init {
+        require(name.isNotBlank())
+        require(requiredPoint > 0)
+    }
+}

@@ -21,7 +21,7 @@ fun SIMMENavHost(
         startDestination = ProjectListDestination.route
     ) {
         composable(route = ProjectListDestination.route) {
-            ProjectListScreen(widthSizeClass = widthSizeClass)
+            //ProjectListScreen(widthSizeClass = widthSizeClass)
         }
     }
 }

@@ -17,5 +17,5 @@ interface BoardDao : ICRUDDao<BoardEntity> {
     fun getBoardRelationById(value: Int): Flow<BoardRelation>
 
     @Query("SELECT * FROM boards")
-    fun getBoards(): Flow<List<BoardEntity>>
+    fun getAllBoards(): Flow<List<BoardEntity>>
 }

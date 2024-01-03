@@ -28,4 +28,9 @@ data class BoardEntity(
     val origin: PointModel,
     val width: Float,
     val height: Float
-)
+) {
+    init {
+        require(width > 0f)
+        require(height > 0f)
+    }
+}

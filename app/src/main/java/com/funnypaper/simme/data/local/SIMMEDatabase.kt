@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import com.funnypaper.simme.data.local.converter.PointConverter
 import com.funnypaper.simme.data.local.converter.SplineConverter
 import com.funnypaper.simme.data.local.dao.BoardDao
+import com.funnypaper.simme.data.local.dao.MetaDataDao
 import com.funnypaper.simme.data.local.dao.NoteDao
 import com.funnypaper.simme.data.local.dao.ProjectDao
 import com.funnypaper.simme.data.local.dao.RankDao
@@ -39,6 +40,7 @@ abstract class SIMMEDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun rankDao(): RankDao
     abstract fun splineDao(): SplineDao
+    abstract fun metaDataDao(): MetaDataDao
 
     companion object {
         const val NAME = "simme_database"

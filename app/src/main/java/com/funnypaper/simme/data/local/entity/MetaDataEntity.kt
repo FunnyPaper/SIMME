@@ -32,8 +32,12 @@ data class MetaDataEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     @ColumnInfo(name = "project_id")
-    val projectId: Int,
+    val projectId: Int?,
     @ColumnInfo(name = "note_id")
-    val noteId: Int,
+    val noteId: Int?,
     val data: String,
-)
+) {
+    init {
+        require(data.isNotBlank())
+    }
+}

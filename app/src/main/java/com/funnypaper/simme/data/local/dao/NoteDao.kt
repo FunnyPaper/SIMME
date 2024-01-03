@@ -17,5 +17,5 @@ interface NoteDao : ICRUDDao<NoteEntity> {
     fun getNoteRelationById(value: Int): Flow<NoteRelation>
 
     @Query("SELECT * FROM notes")
-    fun getNotes(): Flow<List<NoteEntity>>
+    fun getAllNotes(): Flow<List<NoteEntity>>
 }

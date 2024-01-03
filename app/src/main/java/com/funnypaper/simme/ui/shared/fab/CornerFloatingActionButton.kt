@@ -114,7 +114,7 @@ fun CornerFloatingActionButton(
                 CornerFloatingActionButtonRow(
                     expanded = expanded,
                     fabHeight = fab.maxHeight.toDp(),
-                    buttons = horizontalButtons,
+                    buttons = horizontalButtons.reversed(),
                     tonalElevation = tonalElevation,
                     shadowElevation = shadowElevation,
                     containerColor = containerColor,
@@ -131,7 +131,7 @@ fun CornerFloatingActionButton(
                 CornerFloatingActionButtonColumn(
                     expanded = expanded,
                     fabWidth = fab.maxWidth.toDp(),
-                    buttons = verticalButtons,
+                    buttons = verticalButtons.reversed(),
                     tonalElevation = tonalElevation,
                     shadowElevation = shadowElevation,
                     containerColor = containerColor,

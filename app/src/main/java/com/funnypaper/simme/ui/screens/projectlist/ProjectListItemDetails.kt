@@ -82,16 +82,16 @@ fun ProjectListItemDetails(
     val content = contentColorFor(backgroundColor = container)
     val spacing = dimensionResource(id = R.dimen.card_spacing)
 
+    BackHandler {
+        onBackPressed()
+    }
+
     Column(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(spacing),
         verticalArrangement = Arrangement.spacedBy(spacing)
     ) {
-        if(isFullScreen) {
+        if (isFullScreen) {
             ProjectListItemDetailsTopBar(onBackPressed = onBackPressed)
-        } else {
-            BackHandler {
-                onBackPressed()
-            }
         }
 
         Card(
@@ -121,7 +121,7 @@ fun ProjectListItemDetails(
 @Composable
 fun ProjectListItemDetailsTopBar(
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -164,7 +164,8 @@ private fun BoardSection(
 ) {
     Expander(stringResource(id = R.string.board_section), modifier = modifier) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(spacing)
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            modifier = Modifier.horizontalScroll(rememberScrollState())
         ) {
             BoardControl(
                 board = board,
@@ -343,12 +344,19 @@ private fun MetaDataSection(
     modifier: Modifier = Modifier,
 ) {
     Expander(stringResource(id = R.string.meta_section), modifier = modifier) {
-        Column {
-            metaData.forEachIndexed { index, entry ->
-                Text(
-                    text = "${index + 1}. ${entry.data}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        Column(
+            horizontalAlignment = if (metaData.isNotEmpty()) Alignment.Start else Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (metaData.isNotEmpty()) {
+                metaData.forEachIndexed { index, entry ->
+                    Text(
+                        text = "${index + 1}. ${entry.data}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            } else {
+                Text(text = stringResource(id = R.string.empty_metadata))
             }
         }
     }
@@ -405,13 +413,17 @@ private fun RanksSection(
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
         ) {
-            ranks.forEach {
-                RankCard(
-                    uri = it.thumbnailUri,
-                    points = it.requiredPoint.toString(),
-                    name = it.name,
-                    modifier = Modifier.width(64.dp)
-                )
+            if (ranks.isNotEmpty()) {
+                ranks.forEach {
+                    RankCard(
+                        uri = it.thumbnailUri,
+                        points = it.requiredPoint.toString(),
+                        name = it.name,
+                        modifier = Modifier.width(64.dp)
+                    )
+                }
+            } else {
+                Text(text = stringResource(id = R.string.empty_ranks))
             }
         }
     }
@@ -425,6 +437,7 @@ fun ProjectListItemDetailsPreview() {
             ProjectListItemDetails(
                 isFullScreen = true,
                 item = ProjectItemDetailsUIState(
+                    id = 0,
                     thumbnailUri = Uri.EMPTY,
                     title = "title",
                     description = "description",

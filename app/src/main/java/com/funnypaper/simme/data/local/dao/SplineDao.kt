@@ -17,5 +17,5 @@ interface SplineDao : ICRUDDao<SplineEntity> {
     fun getSplineRelationById(value: Int): Flow<SplineRelation>
 
     @Query("SELECT * FROM splines")
-    fun getSplines(): Flow<List<SplineEntity>>
+    fun getAllSplines(): Flow<List<SplineEntity>>
 }

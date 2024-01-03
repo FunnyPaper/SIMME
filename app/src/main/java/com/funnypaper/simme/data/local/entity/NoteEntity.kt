@@ -29,4 +29,9 @@ data class NoteEntity(
     val startTime: Int,
     @ColumnInfo("spline_id")
     val splineId: Int,
-)
+) {
+    init {
+        require(name.isNotBlank())
+        require(length > 0)
+    }
+}

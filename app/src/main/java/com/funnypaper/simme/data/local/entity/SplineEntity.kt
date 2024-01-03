@@ -25,6 +25,11 @@ data class SplineEntity(
     val boardId: Int,
     val name: String,
     @ColumnInfo("beat_length")
-    val beatLength: Int,
+    val beatLength: Float,
     val path: SplineModel,
-)
+) {
+    init {
+        require(name.isNotBlank())
+        require(beatLength > 0f)
+    }
+}
