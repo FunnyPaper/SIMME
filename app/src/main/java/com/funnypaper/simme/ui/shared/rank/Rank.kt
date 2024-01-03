@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.funnypaper.simme.R
+import com.funnypaper.simme.ui.theme.LocalDrawable
 
 @Composable
 fun RankCard(
@@ -32,8 +34,6 @@ fun RankCard(
     name: String,
     uri: Uri,
     modifier: Modifier = Modifier,
-    pendingPainter: Painter = rememberVectorPainter(image = Icons.Filled.Pending),
-    errorPainter: Painter = rememberVectorPainter(image = Icons.Filled.BrokenImage),
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -47,13 +47,13 @@ fun RankCard(
         Column {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(uri)
+                    .data(uri.takeUnless { it == Uri.EMPTY } ?: LocalDrawable.current.defaultRankThumbnail)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(id = R.string.rank_image),
                 contentScale = ContentScale.Crop,
-                placeholder = pendingPainter,
-                error = errorPainter,
+                placeholder = painterResource(id = LocalDrawable.current.loading),
+                error = painterResource(id = LocalDrawable.current.error),
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)

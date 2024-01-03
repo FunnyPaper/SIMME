@@ -14,6 +14,7 @@ import com.funnypaper.simme.domain.repository.IProjectRepository
 import com.funnypaper.simme.domain.utility.SIMMEJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,7 +40,6 @@ class ProjectListViewModel @Inject constructor(
                 id = projectEntity.id,
                 thumbnailUri = Uri.EMPTY,
                 title = projectEntity.title,
-                selected = false
             )
         }
     }.stateIn(
@@ -55,7 +55,8 @@ class ProjectListViewModel @Inject constructor(
     fun importProject(uri: Uri) {
         SIMMEJson.readFromFile<ProjectRelation>(context, uri)?.let {
             viewModelScope.launch {
-                projectRepository.importProject(it)
+                val id = projectRepository.importProject(it)
+                previewProject(id)
             }
         }
     }
@@ -132,5 +133,4 @@ data class ProjectItemUIState(
     val id: Int,
     val thumbnailUri: Uri,
     val title: String,
-    val selected: Boolean,
 )

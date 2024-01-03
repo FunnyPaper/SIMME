@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.platform.LocalContext
 import com.funnypaper.simme.ui.screens.projectlist.ProjectListScreen
 import com.funnypaper.simme.ui.theme.SIMMETheme
 import dagger.hilt.android.AndroidEntryPoint

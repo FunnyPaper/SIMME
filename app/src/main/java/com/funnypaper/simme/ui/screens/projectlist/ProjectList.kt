@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -35,9 +36,10 @@ import com.funnypaper.simme.ui.theme.SIMMETheme
 
 @Composable
 fun ProjectList(
+    selectedItem: ProjectItemUIState?,
     items: List<ProjectItemUIState>,
     modifier: Modifier = Modifier,
-    onListItemClick: (Int) -> Unit = {},
+    onListItemClick: (ProjectItemUIState) -> Unit = {},
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(
@@ -63,6 +65,7 @@ fun ProjectList(
             ) {
                 ProjectListItem(
                     item = it,
+                    selected = selectedItem == it,
                     onListItemClick = onListItemClick
                 )
             }
@@ -88,16 +91,12 @@ fun ProjectListTopBar(
 @Preview(device = "id:pixel_5")
 @Composable
 fun ProjectListPreview() {
-    var selected by remember {
-        mutableStateOf<Int?>(null)
-    }
-
     SIMMETheme {
         Surface {
             ProjectList(
-                onListItemClick = { selected = it },
+                selectedItem = null,
                 items = List(5) {
-                    ProjectItemUIState(it, Uri.EMPTY, "project_$it", selected == it)
+                    ProjectItemUIState(it, Uri.EMPTY, "project_$it")
                 }
             )
         }

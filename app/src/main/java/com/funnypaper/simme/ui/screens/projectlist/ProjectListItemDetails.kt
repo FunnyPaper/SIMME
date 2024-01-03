@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -68,6 +69,7 @@ import com.funnypaper.simme.domain.model.TimingModel
 import com.funnypaper.simme.ui.shared.audiovisualizer.AudioVisualizer
 import com.funnypaper.simme.ui.shared.rank.RankCard
 import com.funnypaper.simme.ui.shared.treelist.Expander
+import com.funnypaper.simme.ui.theme.LocalDrawable
 import com.funnypaper.simme.ui.theme.SIMMETheme
 import kotlin.math.min
 
@@ -368,22 +370,20 @@ private fun DetailsHeader(
     title: String,
     author: String,
     spacing: Dp,
-    modifier: Modifier = Modifier,
-    pendingPainter: Painter = rememberVectorPainter(image = Icons.Filled.Pending),
-    errorPainter: Painter = rememberVectorPainter(image = Icons.Filled.BrokenImage),
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(thumbnailUri)
+                .data(thumbnailUri.takeUnless { it == Uri.EMPTY } ?: LocalDrawable.current.defaultProjectThumbnail)
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(id = R.string.project_image),
             contentScale = ContentScale.Crop,
-            placeholder = pendingPainter,
-            error = errorPainter,
+            placeholder = painterResource(id = LocalDrawable.current.loading),
+            error = painterResource(id = LocalDrawable.current.error),
             modifier = Modifier
                 .width(96.dp)
                 .aspectRatio(1f)
@@ -393,6 +393,7 @@ private fun DetailsHeader(
             modifier = Modifier
                 .weight(1f)
                 .padding(spacing)
+                .horizontalScroll(rememberScrollState())
         ) {
             Text(text = title, style = MaterialTheme.typography.headlineMedium)
             Text(text = author)

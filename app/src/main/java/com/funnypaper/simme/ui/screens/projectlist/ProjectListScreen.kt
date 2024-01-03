@@ -143,7 +143,7 @@ fun ProjectListScreen(
                 item = detailsUIState,
                 items = listUIState,
                 onBackPressed = { projectListViewModel.previewProject(null) },
-                onListItemClick = { projectListViewModel.previewProject(it) },
+                onListItemClick = { projectListViewModel.previewProject(it.id) },
                 modifier = Modifier.padding(it)
             )
 
@@ -151,7 +151,7 @@ fun ProjectListScreen(
                 item = detailsUIState,
                 items = listUIState,
                 onBackPressed = { projectListViewModel.previewProject(null) },
-                onListItemClick = { projectListViewModel.previewProject(it) },
+                onListItemClick = { projectListViewModel.previewProject(it.id) },
                 modifier = Modifier.padding(it)
             )
         }
@@ -160,7 +160,7 @@ fun ProjectListScreen(
 
 @Composable
 private fun ProjectListScreenCompact(
-    onListItemClick: (Int) -> Unit,
+    onListItemClick: (ProjectItemUIState) -> Unit,
     onBackPressed: () -> Unit,
     item: ProjectItemDetailsUIState?,
     items: List<ProjectItemUIState>,
@@ -175,6 +175,7 @@ private fun ProjectListScreenCompact(
         )
     } else {
         ProjectList(
+            selectedItem = null,
             items = items,
             onListItemClick = onListItemClick,
             modifier = modifier.fillMaxSize()
@@ -184,7 +185,7 @@ private fun ProjectListScreenCompact(
 
 @Composable
 private fun ProjectListScreenExpanded(
-    onListItemClick: (Int) -> Unit,
+    onListItemClick: (ProjectItemUIState) -> Unit,
     onBackPressed: () -> Unit,
     item: ProjectItemDetailsUIState?,
     items: List<ProjectItemUIState>,
@@ -197,9 +198,10 @@ private fun ProjectListScreenExpanded(
         modifier = modifier
     ) {
         ProjectList(
+            selectedItem = items.find { it.id == item?.id },
             items = items,
             onListItemClick = onListItemClick,
-            modifier = Modifier.fillMaxWidth(.6f)
+            modifier = Modifier.fillMaxWidth(.5f)
         )
         item?.let {
             ProjectListItemDetails(
