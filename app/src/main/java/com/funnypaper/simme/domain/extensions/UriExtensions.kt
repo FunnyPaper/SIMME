@@ -1,8 +1,10 @@
-package com.funnypaper.simme.ui.shared.extensions
+package com.funnypaper.simme.domain.extensions
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -22,18 +24,21 @@ fun Uri.getFilename(contentResolver: ContentResolver): String? {
     return null
 }
 
+fun Int.resourceIdToUri(context: Context): Uri =
+    with(context.resources) {
+        Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(getResourcePackageName(this@resourceIdToUri))
+            .appendPath(getResourceTypeName(this@resourceIdToUri))
+            .appendPath(getResourceEntryName(this@resourceIdToUri))
+            .build()
+    }
+
 @Composable
 fun rememberResourceUri(resourceId: Int): Uri {
     val context = LocalContext.current
 
     return remember(resourceId) {
-        with(context.resources) {
-            Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(getResourcePackageName(resourceId))
-                .appendPath(getResourceTypeName(resourceId))
-                .appendPath(getResourceEntryName(resourceId))
-                .build()
-        }
+        resourceId.resourceIdToUri(context)
     }
 }
