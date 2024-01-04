@@ -8,7 +8,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    "meta_datas",
+    "meta_data",
     foreignKeys = [
         ForeignKey(
             entity = ProjectEntity::class,

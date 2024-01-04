@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RankDao : ICRUDDao<RankEntity> {
-    @Query("SELECT * FROM ranks WHERE id = :value")
+    @Query("SELECT * FROM rank WHERE id = :value")
     fun getRankById(value: Int): Flow<RankEntity>
 
-    @Query("SELECT * FROM ranks")
+    @Query("SELECT * FROM rank")
     fun getAllRanks(): Flow<List<RankEntity>>
 }

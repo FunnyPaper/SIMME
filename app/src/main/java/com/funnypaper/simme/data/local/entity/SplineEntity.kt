@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import com.funnypaper.simme.domain.model.SplineModel
 
 @Entity(
-    tableName = "splines",
+    tableName = "spline",
     foreignKeys = [
         ForeignKey(
             entity = BoardEntity::class,

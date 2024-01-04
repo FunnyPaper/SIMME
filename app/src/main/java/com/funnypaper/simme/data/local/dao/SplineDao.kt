@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SplineDao : ICRUDDao<SplineEntity> {
-    @Query("SELECT * FROM splines WHERE id = :value")
+    @Query("SELECT * FROM spline WHERE id = :value")
     fun getSplineById(value: Int): Flow<SplineEntity>
 
     @Transaction
-    @Query("SELECT * FROM splines WHERE id = :value")
+    @Query("SELECT * FROM spline WHERE id = :value")
     fun getSplineRelationById(value: Int): Flow<SplineRelation>
 
-    @Query("SELECT * FROM splines")
+    @Query("SELECT * FROM spline")
     fun getAllSplines(): Flow<List<SplineEntity>>
 }

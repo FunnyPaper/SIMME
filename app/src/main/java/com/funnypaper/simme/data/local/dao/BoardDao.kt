@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BoardDao : ICRUDDao<BoardEntity> {
-    @Query("SELECT * FROM boards WHERE id = :value")
+    @Query("SELECT * FROM board WHERE id = :value")
     fun getBoardById(value: Int): Flow<BoardEntity>
 
     @Transaction
-    @Query("SELECT * FROM boards WHERE id = :value")
+    @Query("SELECT * FROM board WHERE id = :value")
     fun getBoardRelationById(value: Int): Flow<BoardRelation>
 
-    @Query("SELECT * FROM boards")
+    @Query("SELECT * FROM board")
     fun getAllBoards(): Flow<List<BoardEntity>>
 }

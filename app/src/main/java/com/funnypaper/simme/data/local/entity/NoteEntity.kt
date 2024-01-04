@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "notes",
+    tableName = "note",
     foreignKeys = [
         ForeignKey(
             entity = SplineEntity::class,

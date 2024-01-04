@@ -6,11 +6,11 @@ import com.funnypaper.simme.data.local.entity.BoardEntity
 import com.funnypaper.simme.data.local.entity.SplineEntity
 
 data class BoardRelation(
-    @Embedded val board: BoardEntity,
+    @Embedded val space: BoardEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "board_id",
         entity = SplineEntity::class
     )
-    val splines: List<SplineRelation>
+    val notePaths: List<SplineRelation>
 )

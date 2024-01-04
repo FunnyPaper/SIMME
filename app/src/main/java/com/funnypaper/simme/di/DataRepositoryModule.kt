@@ -1,5 +1,7 @@
 package com.funnypaper.simme.di
 
+import com.funnypaper.simme.data.local.repository.audio.IDataAudioRepository
+import com.funnypaper.simme.data.local.repository.audio.OfflineDataAudioRepository
 import com.funnypaper.simme.data.local.repository.board.IDataBoardRepository
 import com.funnypaper.simme.data.local.repository.board.OfflineDataBoardRepository
 import com.funnypaper.simme.data.local.repository.metadata.IMetaDataRepository
@@ -12,6 +14,8 @@ import com.funnypaper.simme.data.local.repository.rank.IDataRankRepository
 import com.funnypaper.simme.data.local.repository.rank.OfflineDataRankRepository
 import com.funnypaper.simme.data.local.repository.spline.IDataSplineRepository
 import com.funnypaper.simme.data.local.repository.spline.OfflineDataSplineRepository
+import com.funnypaper.simme.data.local.repository.timing.IDataTimingRepository
+import com.funnypaper.simme.data.local.repository.timing.OfflineDataTimingRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -37,4 +41,10 @@ abstract class DataRepositoryBindsModule {
 
     @Binds
     abstract fun bindOfflineDataNoteRepository(repository: OfflineDataNoteRepository): IDataNoteRepository
+
+    @Binds
+    abstract fun bindOfflineDataAudioRepository(repository: OfflineDataAudioRepository): IDataAudioRepository
+
+    @Binds
+    abstract fun bindOfflineDataTimingRepository(repository: OfflineDataTimingRepository): IDataTimingRepository
 }

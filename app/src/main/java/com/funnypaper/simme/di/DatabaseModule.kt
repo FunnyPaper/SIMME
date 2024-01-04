@@ -3,12 +3,14 @@ package com.funnypaper.simme.di
 import android.content.Context
 import androidx.room.Room
 import com.funnypaper.simme.data.local.SIMMEDatabase
+import com.funnypaper.simme.data.local.dao.AudioDao
 import com.funnypaper.simme.data.local.dao.BoardDao
 import com.funnypaper.simme.data.local.dao.MetaDataDao
 import com.funnypaper.simme.data.local.dao.NoteDao
 import com.funnypaper.simme.data.local.dao.ProjectDao
 import com.funnypaper.simme.data.local.dao.RankDao
 import com.funnypaper.simme.data.local.dao.SplineDao
+import com.funnypaper.simme.data.local.dao.TimingDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,4 +58,12 @@ object DatabaseModule {
     @Provides
     fun provideMetaDataDao(database: SIMMEDatabase): MetaDataDao =
         database.metaDataDao()
+
+    @Provides
+    fun provideAudioDao(database: SIMMEDatabase): AudioDao =
+        database.audioDao()
+
+    @Provides
+    fun provideTimingDao(database: SIMMEDatabase): TimingDao =
+        database.timingDao()
 }

@@ -449,7 +449,7 @@ fun ProjectListItemDetailsPreview() {
                         offset = 0
                     ),
                     audio = null,
-                    board = BoardModel(PointModel(-500f, -220f), 1920f, 1080f),
+                    board = BoardModel(PointModel(-500f, -220f), 1920f, 1080f, emptyList()),
                     metaData = listOf(MetaDataModel("META 1"), MetaDataModel("META 2")),
                     ranks = List(3) { RankModel("name $it", it, Uri.EMPTY) }
                 )

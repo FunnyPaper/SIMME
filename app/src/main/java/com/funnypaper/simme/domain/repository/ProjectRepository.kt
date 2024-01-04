@@ -1,20 +1,20 @@
 package com.funnypaper.simme.domain.repository
 
-import android.net.Uri
-import android.util.Log
 import com.funnypaper.simme.data.local.entity.BoardEntity
 import com.funnypaper.simme.data.local.entity.ProjectEntity
+import com.funnypaper.simme.data.local.entity.TimingEntity
 import com.funnypaper.simme.data.local.relation.ProjectRelation
+import com.funnypaper.simme.data.local.repository.audio.IDataAudioRepository
 import com.funnypaper.simme.data.local.repository.board.IDataBoardRepository
 import com.funnypaper.simme.data.local.repository.metadata.IMetaDataRepository
 import com.funnypaper.simme.data.local.repository.note.IDataNoteRepository
 import com.funnypaper.simme.data.local.repository.project.IDataProjectRepository
 import com.funnypaper.simme.data.local.repository.rank.IDataRankRepository
 import com.funnypaper.simme.data.local.repository.spline.IDataSplineRepository
+import com.funnypaper.simme.data.local.repository.timing.IDataTimingRepository
 import com.funnypaper.simme.domain.model.PointModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class ProjectRepository @Inject constructor(
@@ -23,8 +23,13 @@ class ProjectRepository @Inject constructor(
     private val metaDataRepository: IMetaDataRepository,
     private val dataRankRepository: IDataRankRepository,
     private val dataSplineRepository: IDataSplineRepository,
-    private val dataNoteRepository: IDataNoteRepository
+    private val dataNoteRepository: IDataNoteRepository,
+    private val dataAudioRepository: IDataAudioRepository,
+    private val dataTimingRepository: IDataTimingRepository,
 ) : IProjectRepository {
+
+    // TODO: Split data management
+
     override fun getAllProjects(): Flow<List<ProjectEntity>> =
         dataProjectRepository.getAllProjects()
     override fun getProjectRelation(id: Int): Flow<ProjectRelation> =
@@ -36,10 +41,6 @@ class ProjectRepository @Inject constructor(
             title = "Project",
             description = "Description",
             author = "Author",
-            startOffset = 0,
-            duration = 0,
-            bpm = 152,
-            audioPath = null
         )
         val projectId = dataProjectRepository.insertProject(projectEntity).toInt()
         val boardEntity = BoardEntity(
@@ -50,17 +51,38 @@ class ProjectRepository @Inject constructor(
             height = 1f
         )
         dataBoardRepository.insertBoard(boardEntity)
+        val timingEntity = TimingEntity(
+            id = 0,
+            projectId = projectId,
+            bpm = 1,
+            offset = 0,
+            millis = 1
+        )
+        dataTimingRepository.insertTiming(timingEntity)
     }
     override suspend fun importProject(projectRelation: ProjectRelation): Int {
         val projectEntity = projectRelation.project.copy(id = 0)
         val projectEntityId = dataProjectRepository.insertProject(projectEntity).toInt()
+
+        projectRelation.audio?.let {
+            val audioEntity = it.copy(
+                id = 0,
+                projectId = projectEntityId
+            )
+            dataAudioRepository.insertAudio(audioEntity)
+        }
+
+        val timingEntity = projectRelation.timing.copy(
+            id = 0,
+            projectId = projectEntityId
+        )
+        dataTimingRepository.insertTiming(timingEntity)
 
         projectRelation.metaData.forEach {
             val metaDataEntity = it.copy(
                 id = 0,
                 projectId = projectEntityId
             )
-
             metaDataRepository.insertMetaData(metaDataEntity)
         }
 
@@ -73,13 +95,13 @@ class ProjectRepository @Inject constructor(
             dataRankRepository.insertRank(rankEntity)
         }
 
-        val boardEntity = projectRelation.board.board.copy(
+        val boardEntity = projectRelation.board.space.copy(
             id = 0,
             projectId = projectEntityId
         )
         val boardEntityId = dataBoardRepository.insertBoard(boardEntity).toInt()
 
-        projectRelation.board.splines.forEach { splineRelation ->
+        projectRelation.board.notePaths.forEach { splineRelation ->
             val splineEntity = splineRelation.spline.copy(
                 id = 0,
                 boardId = boardEntityId
@@ -93,7 +115,6 @@ class ProjectRepository @Inject constructor(
                     splineId = splineEntityId
                 )
 
-                // add note dao
                 val noteEntityId = dataNoteRepository.insertNote(noteEntity).toInt()
 
                 noteRelation.metaData.forEach {

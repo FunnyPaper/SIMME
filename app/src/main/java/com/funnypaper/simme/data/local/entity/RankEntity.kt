@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 import java.util.UUID
 
 @Entity(
-    tableName = "ranks",
+    tableName = "rank",
     foreignKeys = [
         ForeignKey(
             entity = ProjectEntity::class,

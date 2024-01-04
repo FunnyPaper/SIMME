@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao : ICRUDDao<NoteEntity> {
-    @Query("SELECT * FROM notes WHERE id = :value")
+    @Query("SELECT * FROM note WHERE id = :value")
     fun getNoteById(value: Int): Flow<NoteEntity>
 
     @Transaction
-    @Query("SELECT * FROM notes WHERE id = :value")
+    @Query("SELECT * FROM note WHERE id = :value")
     fun getNoteRelationById(value: Int): Flow<NoteRelation>
 
-    @Query("SELECT * FROM notes")
+    @Query("SELECT * FROM note")
     fun getAllNotes(): Flow<List<NoteEntity>>
 }

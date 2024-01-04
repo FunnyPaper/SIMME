@@ -4,13 +4,20 @@ import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import javax.inject.Inject
 
 object SIMMEJson {
+    val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(Uri::class.java, UriTypeAdapter())
+        .setPrettyPrinting()
+        .serializeNulls()
+        .create()
+
     inline fun <reified T>parse(jsonString: String): T =
-        Gson().fromJson(jsonString, T::class.java)
+        gson.fromJson(jsonString, T::class.java)
 
     fun toString(obj: Any?): String =
-        GsonBuilder().setPrettyPrinting().create().toJson(obj)
+        gson.toJson(obj)
 
     fun <T>writeToFile(context: Context, directoryUri: Uri, obj: T) {
         context.contentResolver.openOutputStream(directoryUri)?.use {
