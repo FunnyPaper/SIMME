@@ -6,7 +6,7 @@ import com.funnypaper.simme.data.local.relation.ProjectRelation
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataProjectRepository @Inject constructor(
+class OfflineProjectRepository @Inject constructor(
     private val projectDao: ProjectDao
 ) : IDataProjectRepository {
     override fun getAllProjects(): Flow<List<ProjectEntity>> =

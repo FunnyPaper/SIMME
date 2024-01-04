@@ -5,7 +5,7 @@ import com.funnypaper.simme.data.local.entity.TimingEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataTimingRepository @Inject constructor(
+class OfflineTimingRepository @Inject constructor(
     private val timingDao: TimingDao
 ) : IDataTimingRepository {
     override fun getTiming(id: Int): Flow<TimingEntity> =

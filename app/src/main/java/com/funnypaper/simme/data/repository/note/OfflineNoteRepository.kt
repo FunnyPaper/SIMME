@@ -6,7 +6,7 @@ import com.funnypaper.simme.data.local.relation.NoteRelation
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataNoteRepository @Inject constructor(
+class OfflineNoteRepository @Inject constructor(
     private val noteDao: NoteDao
 ) : IDataNoteRepository {
     override fun getAllNotes(): Flow<List<NoteEntity>> =

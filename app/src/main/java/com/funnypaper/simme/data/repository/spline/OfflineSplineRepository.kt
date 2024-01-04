@@ -6,7 +6,7 @@ import com.funnypaper.simme.data.local.relation.SplineRelation
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataSplineRepository @Inject constructor(
+class OfflineSplineRepository @Inject constructor(
     private val splineDao: SplineDao
 ): IDataSplineRepository {
     override fun getAllSplines(): Flow<List<SplineEntity>> =

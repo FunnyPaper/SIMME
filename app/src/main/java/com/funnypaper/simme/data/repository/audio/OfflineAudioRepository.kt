@@ -5,7 +5,7 @@ import com.funnypaper.simme.data.local.entity.AudioEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataAudioRepository @Inject constructor(
+class OfflineAudioRepository @Inject constructor(
     private val audioDao: AudioDao
 ) : IDataAudioRepository {
     override fun getAudio(id: Int): Flow<AudioEntity> =

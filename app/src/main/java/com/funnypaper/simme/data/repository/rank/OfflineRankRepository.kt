@@ -5,7 +5,7 @@ import com.funnypaper.simme.data.local.entity.RankEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataRankRepository @Inject constructor(
+class OfflineRankRepository @Inject constructor(
     private val rankDao: RankDao
 ) : IDataRankRepository {
     override fun getAllRanks(): Flow<List<RankEntity>> =

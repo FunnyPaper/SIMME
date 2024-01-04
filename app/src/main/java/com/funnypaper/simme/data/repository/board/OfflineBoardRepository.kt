@@ -6,7 +6,7 @@ import com.funnypaper.simme.data.local.relation.BoardRelation
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OfflineDataBoardRepository @Inject constructor(
+class OfflineBoardRepository @Inject constructor(
     private val boardDao: BoardDao
 ) : IDataBoardRepository {
     override fun getBoard(id: Int): Flow<BoardEntity> =
