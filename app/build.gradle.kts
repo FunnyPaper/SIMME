@@ -85,16 +85,15 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("com.google.code.gson:gson:2.8.8")
 
     val hilt = rootProject.extra["hilt_version"]
     implementation("com.google.dagger:hilt-android:$hilt")
     kapt("com.google.dagger:hilt-android-compiler:$hilt")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    // Multik
-    val multik = rootProject.extra["multik_version"]
-    implementation("org.jetbrains.kotlinx:multik-core:$multik")
-    implementation("org.jetbrains.kotlinx:multik-kotlin:$multik")
+    val coil = rootProject.extra["coil_version"]
+    implementation("io.coil-kt:coil-compose:$coil")
 
     // Tests
     testImplementation("junit:junit:4.13.2")
