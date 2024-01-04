@@ -70,71 +70,28 @@ fun ProjectListScreen(
     }
 
     var openAlertDialog by remember { mutableStateOf(false) }
-    if(openAlertDialog) {
-        AlertDialog(
-            icon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = null) },
-            title = { Text(text = stringResource(id = R.string.dialog_delete_project_title, detailsUIState!!.title))},
-            text = { Text(text = stringResource(id = R.string.dialog_delete_project_text, detailsUIState!!.title)) },
-            onDismissRequest = { openAlertDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    projectListViewModel.deleteProject(detailsUIState!!.id)
-                    openAlertDialog = false
-                }) {
-                    Text(text = stringResource(id = R.string.dialog_confirm))
-                }
+    if(openAlertDialog && detailsUIState != null) {
+        ProjectListScreenAlertDialog(
+            title = detailsUIState!!.title,
+            onDismiss = { openAlertDialog = false },
+            onConfirm = {
+                projectListViewModel.deleteProject(detailsUIState!!.id)
+                openAlertDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { openAlertDialog = false }) {
-                    Text(text = stringResource(id = R.string.dialog_dismiss))
-                }
-            }
         )
     }
 
     Scaffold(
         modifier = modifier.padding(8.dp),
         floatingActionButton = {
-            CornerFloatingActionButton(
-                horizontalButtons = detailsUIState?.let {
-                    listOf(
-                        {
-                            IconButton(onClick = { exportLauncher.launch(it.title) }) {
-                                Icon(imageVector = Icons.Filled.Upload, contentDescription = null)
-                            }
-                        },
-                        {
-                            IconButton(onClick = { projectListViewModel.duplicateProject(it.id) }) {
-                                Icon(imageVector = Icons.Filled.FileCopy, contentDescription = null)
-                            }
-                        },
-                        {
-                            IconButton(onClick = { openAlertDialog = true }) {
-                                Icon(
-                                    imageVector = Icons.Filled.DeleteForever,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        {
-                            IconButton(onClick = { onEditProject(it.id) }) {
-                                Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
-                            }
-                        },
-                    )
-                } ?: emptyList(),
-                verticalButtons = listOf(
-                    {
-                        IconButton(onClick = { projectListViewModel.createProject() }) {
-                            Icon(imageVector = Icons.Filled.AddCircle, contentDescription = null)
-                        }
-                    },
-                    {
-                        IconButton(onClick = { importLauncher.launch(arrayOf("application/json")) }) {
-                            Icon(imageVector = Icons.Filled.SaveAlt, contentDescription = null)
-                        }
-                    },
-                )
+            ProjectListScreenActionButton(
+                selectedProject = detailsUIState,
+                onEditProject = onEditProject,
+                onExportProject = { exportLauncher.launch(it) },
+                onDuplicateProject = { projectListViewModel.duplicateProject(it) },
+                onDeleteProject = { openAlertDialog = true },
+                onCreateProject = { projectListViewModel.createProject() },
+                onImportProject = { importLauncher.launch(arrayOf("application/json"))}
             )
         }
     ) {
@@ -156,6 +113,83 @@ fun ProjectListScreen(
             )
         }
     }
+}
+
+@Composable
+private fun ProjectListScreenActionButton(
+    selectedProject: ProjectItemDetailsUIState?,
+    onEditProject: (Int) -> Unit,
+    onExportProject: (String) -> Unit,
+    onDuplicateProject: (Int) -> Unit,
+    onDeleteProject: (Int) -> Unit,
+    onCreateProject: () -> Unit,
+    onImportProject: () -> Unit
+) {
+    CornerFloatingActionButton(
+        horizontalButtons = selectedProject?.let {
+            listOf(
+                {
+                    IconButton(onClick = { onExportProject(it.title) }) {
+                        Icon(imageVector = Icons.Filled.Upload, contentDescription = null)
+                    }
+                },
+                {
+                    IconButton(onClick = { onDuplicateProject(it.id) }) {
+                        Icon(imageVector = Icons.Filled.FileCopy, contentDescription = null)
+                    }
+                },
+                {
+                    IconButton(onClick = { onDeleteProject(it.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.DeleteForever,
+                            contentDescription = null
+                        )
+                    }
+                },
+                {
+                    IconButton(onClick = { onEditProject(it.id) }) {
+                        Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
+                    }
+                },
+            )
+        } ?: emptyList(),
+        verticalButtons = listOf(
+            {
+                IconButton(onClick = { onCreateProject() }) {
+                    Icon(imageVector = Icons.Filled.AddCircle, contentDescription = null)
+                }
+            },
+            {
+                IconButton(onClick = { onImportProject() }) {
+                    Icon(imageVector = Icons.Filled.SaveAlt, contentDescription = null)
+                }
+            },
+        )
+    )
+}
+
+@Composable
+fun ProjectListScreenAlertDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        icon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = null) },
+        title = { Text(text = stringResource(id = R.string.dialog_delete_project_title, title))},
+        text = { Text(text = stringResource(id = R.string.dialog_delete_project_text, title)) },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(id = R.string.dialog_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(id = R.string.dialog_dismiss))
+            }
+        }
+    )
 }
 
 @Composable
