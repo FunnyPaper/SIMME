@@ -5,15 +5,19 @@ import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -29,12 +33,16 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,16 +60,16 @@ import com.funnypaper.simme.ui.theme.SIMMETheme
  * Helper holder for creating tree structure that can be passed to [TreeList] component
  * @param children Nested tree nodes containing composable contents
  * @param content Content of the current tree node
+ * @param childrenHidden Is children hidden
+ * @param toggleVisibility Callback that is to be called in case of visibility change action
  */
+@Stable
 data class TreeListItem(
     val children: List<TreeListItem>? = null,
+    val childrenHidden: MutableState<Boolean> = mutableStateOf(false),
+    val toggleVisibility: () -> Unit = { childrenHidden.value = !childrenHidden.value },
     val content: @Composable () -> Unit,
-) {
-    /**
-     * Should content of the children hide or show
-     */
-    internal var childrenHidden: Boolean by mutableStateOf(false)
-}
+)
 
 /**
  * Component allowing to lay children in nested structure similar to folder tree list
@@ -82,14 +90,14 @@ fun TreeList(
     childPadding: Dp = TreeListDefaults.childPadding,
     colors: TreeListColors = TreeListDefaults.colors(),
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        node(
+        Node(
             treeListItem = treeListItem,
             expandIcon = expandIcon,
             hideIcon = hideIcon,
-            toggleVisibility = { it.childrenHidden = !it.childrenHidden },
+            toggleVisibility = { it.toggleVisibility() },
             // Root node should always be present
             hidden = false,
             childPadding = childPadding,
@@ -98,7 +106,8 @@ fun TreeList(
     }
 }
 
-private fun LazyListScope.node(
+@Composable
+private fun Node(
     treeListItem: TreeListItem,
     expandIcon: ImageVector,
     hideIcon: ImageVector,
@@ -108,61 +117,59 @@ private fun LazyListScope.node(
     childPadding: Dp = 0.dp,
     depth: Int = 0,
 ) {
-    item {
-        AnimatedVisibility(
-            visible = !hidden,
-            enter = slideIn(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) {
-                IntOffset(-it.width, 0)
-            },
-            exit = slideOut(tween(500, 0, EaseInOutCubic)) {
-                IntOffset(-it.width, 0)
+    AnimatedVisibility(
+        visible = !hidden,
+        enter = slideIn(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) {
+            IntOffset(-it.width, 0)
+        },
+        exit = shrinkVertically(tween(500, 0, EaseInOutCubic))
+    ) {
+        val fullHidden by remember {
+            derivedStateOf {
+                treeListItem.childrenHidden.value || treeListItem.children == null
             }
+        }
+        val contentColor = colors.nodeContentColor(expanded = !fullHidden).value
+        val containerColor = colors.nodeContainerColor(expanded = !fullHidden).value
+
+        CompositionLocalProvider(
+            // Provide default colors to be used if content doesn't specify any
+            LocalContentColor provides contentColor,
         ) {
-            val fullHidden by remember {
-                derivedStateOf {
-                    treeListItem.childrenHidden || treeListItem.children == null
-                }
-            }
-            val contentColor = colors.nodeContentColor(expanded = !fullHidden).value
-            val containerColor = colors.nodeContainerColor(expanded = !fullHidden).value
-
-            CompositionLocalProvider(
-                // Provide default colors to be used if content doesn't specify any
-                LocalContentColor provides contentColor,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Make rows as tall as expand more/less icon buttons
+                    .height(IntrinsicSize.Min)
+                    .background(containerColor)
+                    .clickable { toggleVisibility(treeListItem) }
+                    .padding(start = childPadding * depth)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        // Make rows as tall as expand more/less icon buttons
-                        .height(IntrinsicSize.Min)
-                        .background(containerColor)
-                        .padding(start = childPadding * depth)
+                        // Match icon size from the edges
+                        .padding(12.dp)
+                        .weight(1f)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            // Match icon size from the edges
-                            .padding(12.dp)
-                            .weight(1f)
-                    ) {
-                        treeListItem.content()
-                    }
+                    treeListItem.content()
+                }
 
-                    // Show expand / hide action if content has children
-                    if (treeListItem.children != null) {
-                        IconButton(
-                            onClick = { toggleVisibility(treeListItem) }
-                        ) {
-                            Icon(
-                                imageVector = if(treeListItem.childrenHidden) expandIcon else hideIcon,
-                                contentDescription = stringResource(
-                                    id = if(treeListItem.childrenHidden)
-                                        R.string.expand_icon
-                                    else
-                                        R.string.hide_icon
-                                )
+                // Show expand / hide action if content has children
+                if (treeListItem.children != null) {
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if(treeListItem.childrenHidden.value) expandIcon else hideIcon,
+                            contentDescription = stringResource(
+                                id = if(treeListItem.childrenHidden.value)
+                                    R.string.expand_icon
+                                else
+                                    R.string.hide_icon
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -171,13 +178,13 @@ private fun LazyListScope.node(
 
     // Compose every children if any in recursive manner
     treeListItem.children?.forEach {
-        node(
+        Node(
             treeListItem = it,
             expandIcon = expandIcon,
             hideIcon = hideIcon,
             toggleVisibility = toggleVisibility,
             // Hidden property should cascade to children
-            hidden = treeListItem.childrenHidden || hidden,
+            hidden = treeListItem.childrenHidden.value || hidden,
             childPadding = childPadding,
             depth = depth + 1,
             colors = colors
