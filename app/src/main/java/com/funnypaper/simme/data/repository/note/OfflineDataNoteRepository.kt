@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.note
+package com.funnypaper.simme.data.repository.note
 
 import com.funnypaper.simme.data.local.dao.NoteDao
 import com.funnypaper.simme.data.local.entity.NoteEntity

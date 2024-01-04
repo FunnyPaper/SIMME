@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.timing
+package com.funnypaper.simme.data.repository.timing
 
 import com.funnypaper.simme.data.local.dao.TimingDao
 import com.funnypaper.simme.data.local.entity.TimingEntity

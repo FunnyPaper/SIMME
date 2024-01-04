@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.project
+package com.funnypaper.simme.data.repository.project
 
 import com.funnypaper.simme.data.local.entity.ProjectEntity
 import com.funnypaper.simme.data.local.relation.ProjectRelation

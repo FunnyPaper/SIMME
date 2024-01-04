@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.rank
+package com.funnypaper.simme.data.repository.rank
 
 import com.funnypaper.simme.data.local.dao.RankDao
 import com.funnypaper.simme.data.local.entity.RankEntity

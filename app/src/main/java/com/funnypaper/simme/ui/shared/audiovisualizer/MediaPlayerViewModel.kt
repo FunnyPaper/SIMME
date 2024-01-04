@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.MediaExtractor
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -15,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.funnypaper.simme.domain.extensions.progression
 import com.funnypaper.simme.domain.extensions.setUri
+import com.funnypaper.simme.domain.utility.audio.getPCMData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers

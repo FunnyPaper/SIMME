@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
@@ -52,6 +51,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.funnypaper.simme.domain.extensions.getFilename
 import com.funnypaper.simme.domain.extensions.scaleNumber
+import com.funnypaper.simme.domain.utility.audio.shrinkArray
 
 @Composable
 fun AudioVisualizer(

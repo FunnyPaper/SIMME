@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.audio
+package com.funnypaper.simme.data.repository.audio
 
 import com.funnypaper.simme.data.local.entity.AudioEntity
 import kotlinx.coroutines.flow.Flow

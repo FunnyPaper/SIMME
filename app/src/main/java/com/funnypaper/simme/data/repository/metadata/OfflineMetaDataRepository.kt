@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.metadata
+package com.funnypaper.simme.data.repository.metadata
 
 import com.funnypaper.simme.data.local.dao.MetaDataDao
 import com.funnypaper.simme.data.local.entity.MetaDataEntity

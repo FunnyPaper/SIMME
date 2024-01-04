@@ -9,7 +9,6 @@ import com.funnypaper.simme.data.local.relation.ProjectRelation
 import com.funnypaper.simme.domain.model.AudioFileModel
 import com.funnypaper.simme.domain.model.BoardModel
 import com.funnypaper.simme.domain.model.MetaDataModel
-import com.funnypaper.simme.domain.model.ProjectModel
 import com.funnypaper.simme.domain.model.RankModel
 import com.funnypaper.simme.domain.model.TimingModel
 import com.funnypaper.simme.domain.model.toAudioFileModel
@@ -18,7 +17,7 @@ import com.funnypaper.simme.domain.model.toMetaDataModel
 import com.funnypaper.simme.domain.model.toRankModel
 import com.funnypaper.simme.domain.model.toTimingModel
 import com.funnypaper.simme.domain.repository.IProjectRepository
-import com.funnypaper.simme.domain.utility.SIMMEJson
+import com.funnypaper.simme.domain.utility.json.SIMMEJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow

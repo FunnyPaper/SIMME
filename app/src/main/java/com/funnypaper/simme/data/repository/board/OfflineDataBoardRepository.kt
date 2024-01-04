@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.board
+package com.funnypaper.simme.data.repository.board
 
 import com.funnypaper.simme.data.local.dao.BoardDao
 import com.funnypaper.simme.data.local.entity.BoardEntity

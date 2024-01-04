@@ -1,8 +1,7 @@
-package com.funnypaper.simme.ui.shared.audiovisualizer
+package com.funnypaper.simme.domain.utility.audio
 
 import android.media.MediaCodec
 import android.media.MediaCodec.BufferInfo
-import android.media.MediaCodecList
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import com.funnypaper.simme.domain.extensions.getAudioTrackIndex

@@ -1,10 +1,9 @@
-package com.funnypaper.simme.domain.utility
+package com.funnypaper.simme.domain.utility.json
 
 import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import javax.inject.Inject
 
 object SIMMEJson {
     val gson: Gson = GsonBuilder()

@@ -1,4 +1,4 @@
-package com.funnypaper.simme.domain.utility
+package com.funnypaper.simme.domain.utility.json
 
 import android.net.Uri
 import com.google.gson.TypeAdapter

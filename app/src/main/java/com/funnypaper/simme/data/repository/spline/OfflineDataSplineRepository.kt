@@ -1,4 +1,4 @@
-package com.funnypaper.simme.data.local.repository.spline
+package com.funnypaper.simme.data.repository.spline
 
 import com.funnypaper.simme.data.local.dao.SplineDao
 import com.funnypaper.simme.data.local.entity.SplineEntity
