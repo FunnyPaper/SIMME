@@ -50,11 +50,6 @@ fun ProjectList(
         ),
         modifier = modifier
     ) {
-        item {
-            ProjectListTopBar()
-            Divider()
-        }
-
         items(items, { it.id }) {
             AnimatedVisibility(
                 visible = true,
@@ -70,21 +65,6 @@ fun ProjectList(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ProjectListTopBar(
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-    ) {
-        Text(
-            text = "Projects",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.weight(1f)
-        )
     }
 }
 

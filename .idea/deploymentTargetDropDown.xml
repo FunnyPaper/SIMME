@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="EditorBoardPreview">
+        <State />
+      </entry>
       <entry key="ProjectListScreenCompactPreview">
         <State />
       </entry>

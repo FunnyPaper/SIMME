@@ -77,7 +77,6 @@ import kotlin.math.min
 fun ProjectListItemDetails(
     item: ProjectItemDetailsUIState,
     modifier: Modifier = Modifier,
-    isFullScreen: Boolean = false,
     onBackPressed: () -> Unit = {},
 ) {
     val container = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = .18f)
@@ -92,10 +91,6 @@ fun ProjectListItemDetails(
         modifier = modifier.padding(spacing),
         verticalArrangement = Arrangement.spacedBy(spacing)
     ) {
-        if (isFullScreen) {
-            ProjectListItemDetailsTopBar(onBackPressed = onBackPressed)
-        }
-
         Card(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             colors = CardDefaults.cardColors(
@@ -436,7 +431,6 @@ fun ProjectListItemDetailsPreview() {
     SIMMETheme {
         Surface {
             ProjectListItemDetails(
-                isFullScreen = true,
                 item = ProjectItemDetailsUIState(
                     id = 0,
                     thumbnailUri = Uri.EMPTY,

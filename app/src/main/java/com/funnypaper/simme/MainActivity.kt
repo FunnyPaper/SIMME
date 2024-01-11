@@ -7,8 +7,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.ui.platform.LocalContext
-import com.funnypaper.simme.ui.screens.projectlist.ProjectListScreen
+import androidx.navigation.compose.rememberNavController
+import com.funnypaper.simme.ui.navigation.graph.SIMMENavHost
 import com.funnypaper.simme.ui.theme.SIMMETheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,9 +23,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.onBackground
                 ) {
-                    ProjectListScreen(
-                        onEditProject = {},
-                        widthSizeClass = calculateWindowSizeClass(this).widthSizeClass
+                    val sizeClass = calculateWindowSizeClass(this)
+                    SIMMENavHost(
+                        widthSizeClass = sizeClass.widthSizeClass,
+                        navHostController = rememberNavController()
                     )
                 }
             }
