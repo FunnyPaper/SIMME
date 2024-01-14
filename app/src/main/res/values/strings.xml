@@ -28,4 +28,11 @@
     <string name="dialog_delete_project_title">Delete %s</string>
     <string name="dialog_delete_project_text">This action will delete %s permanently. Do you still want to proceed?</string>
     <string name="dialog_dismiss">Dismiss</string>
+    <string name="global_properties_title">Global Properties</string>
+    <string name="map_simulation_title">Map Simulation</string>
+    <string name="map_editor_title">Map Editor</string>
+    <string name="side_menu">Side menu</string>
+    <string name="editor_root_title">Editor Root</string>
+    <string name="project_list_title">Project List</string>
+    <string name="project_details">Project Details</string>
 </resources>

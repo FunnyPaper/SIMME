@@ -84,12 +84,8 @@ class ProjectListViewModel @Inject constructor(
     }
 
     fun previewProject(id: Int?) = viewModelScope.launch {
-        try {
-            _detailsUIState.value = id?.let {
-                mapRelationToUIState(it).first()
-            }
-        } catch (e: Exception) {
-            Log.e("Error", "error", e)
+        _detailsUIState.value = id?.let {
+            mapRelationToUIState(it).first()
         }
     }
 

@@ -14,11 +14,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileCopy
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,28 +32,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.funnypaper.simme.R
-import com.funnypaper.simme.ui.navigation.SIMMENavDestination
+import com.funnypaper.simme.ui.navigation.SIMMENavigationWrapper
 import com.funnypaper.simme.ui.shared.fab.CornerFloatingActionButton
 import com.funnypaper.simme.ui.theme.SIMMETheme
 
-object ProjectListDestination : SIMMENavDestination {
-    override val route = "ProjectList"
-    override val routeTitleRes = R.string.app_name
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectListScreen(
     onEditProject: (Int) -> Unit,
     widthSizeClass: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
     projectListViewModel: ProjectListViewModel = hiltViewModel(),
+    navHostController: NavHostController = rememberNavController(),
 ) {
     val listUIState by projectListViewModel.listUIState.collectAsState()
     val detailsUIState by projectListViewModel.detailsUIState.collectAsState()
+    val isNavigationRoot = detailsUIState == null || widthSizeClass != WindowWidthSizeClass.Compact
 
     val exportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
@@ -70,7 +66,7 @@ fun ProjectListScreen(
     }
 
     var openAlertDialog by remember { mutableStateOf(false) }
-    if(openAlertDialog && detailsUIState != null) {
+    if (openAlertDialog && detailsUIState != null) {
         ProjectListScreenAlertDialog(
             title = detailsUIState!!.title,
             onDismiss = { openAlertDialog = false },
@@ -81,8 +77,30 @@ fun ProjectListScreen(
         )
     }
 
-    Scaffold(
-        modifier = modifier.padding(8.dp),
+    SIMMENavigationWrapper(
+        title = {
+            Text(
+                text = stringResource(
+                    id = if (isNavigationRoot)
+                        it.routeTitleRes
+                    else
+                        R.string.project_details
+                )
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    projectListViewModel.previewProject(null)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    contentDescription = null
+                )
+            }
+        },
+        isNavigationRoot = isNavigationRoot,
         floatingActionButton = {
             ProjectListScreenActionButton(
                 selectedProject = detailsUIState,
@@ -91,9 +109,11 @@ fun ProjectListScreen(
                 onDuplicateProject = { projectListViewModel.duplicateProject(it) },
                 onDeleteProject = { openAlertDialog = true },
                 onCreateProject = { projectListViewModel.createProject() },
-                onImportProject = { importLauncher.launch(arrayOf("application/json"))}
+                onImportProject = { importLauncher.launch(arrayOf("application/json")) }
             )
-        }
+        },
+        navHostController = navHostController,
+        modifier = modifier
     ) {
         when (widthSizeClass) {
             WindowWidthSizeClass.Compact -> ProjectListScreenCompact(
@@ -123,7 +143,7 @@ private fun ProjectListScreenActionButton(
     onDuplicateProject: (Int) -> Unit,
     onDeleteProject: (Int) -> Unit,
     onCreateProject: () -> Unit,
-    onImportProject: () -> Unit
+    onImportProject: () -> Unit,
 ) {
     CornerFloatingActionButton(
         horizontalButtons = selectedProject?.let {
@@ -176,7 +196,7 @@ fun ProjectListScreenAlertDialog(
 ) {
     AlertDialog(
         icon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = null) },
-        title = { Text(text = stringResource(id = R.string.dialog_delete_project_title, title))},
+        title = { Text(text = stringResource(id = R.string.dialog_delete_project_title, title)) },
         text = { Text(text = stringResource(id = R.string.dialog_delete_project_text, title)) },
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -203,7 +223,6 @@ private fun ProjectListScreenCompact(
     if (item != null) {
         ProjectListItemDetails(
             item = item,
-            isFullScreen = true,
             onBackPressed = onBackPressed,
             modifier = modifier.fillMaxSize()
         )
