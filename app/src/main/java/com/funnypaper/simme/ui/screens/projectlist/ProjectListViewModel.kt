@@ -2,7 +2,6 @@ package com.funnypaper.simme.ui.screens.projectlist
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.funnypaper.simme.data.local.relation.ProjectRelation
@@ -17,6 +16,8 @@ import com.funnypaper.simme.domain.model.toMetaDataModel
 import com.funnypaper.simme.domain.model.toRankModel
 import com.funnypaper.simme.domain.model.toTimingModel
 import com.funnypaper.simme.domain.repository.IProjectRepository
+import com.funnypaper.simme.domain.repository.NavigationPreferencesRepository
+import com.funnypaper.simme.domain.usecase.GetAudioFileUseCase
 import com.funnypaper.simme.domain.utility.json.SIMMEJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,13 +28,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProjectListViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val getAudioFileUseCase: GetAudioFileUseCase,
     private val projectRepository: IProjectRepository,
+    private val navigationPreferencesRepository: NavigationPreferencesRepository,
 ) : ViewModel() {
     private val _detailsUIState: MutableStateFlow<ProjectItemDetailsUIState?> =
         MutableStateFlow(null)
@@ -84,12 +88,15 @@ class ProjectListViewModel @Inject constructor(
     }
 
     fun previewProject(id: Int?) = viewModelScope.launch {
-        _detailsUIState.value = id?.let {
-            mapRelationToUIState(it).first()
+        navigationPreferencesRepository.saveProjectId(id)
+        id?.let {
+            mapRelationToUIState(it).collect {
+                _detailsUIState.emit(it)
+            }
         }
     }
 
-    private fun mapRelationToUIState(id: Int): Flow<ProjectItemDetailsUIState> {
+    private suspend fun mapRelationToUIState(id: Int): Flow<ProjectItemDetailsUIState> {
         return projectRepository.getProjectRelation(id).map { relation ->
             ProjectItemDetailsUIState(
                 id = relation.project.id,
@@ -103,6 +110,9 @@ class ProjectListViewModel @Inject constructor(
                 metaData = relation.metaData.map { it.toMetaDataModel() },
                 ranks = relation.ranks.map { it.toRankModel() }
             )
+        }.transform { project ->
+            emit(project)
+            emit(project.copy(audio = getAudioFileUseCase(id).first()))
         }
     }
 }

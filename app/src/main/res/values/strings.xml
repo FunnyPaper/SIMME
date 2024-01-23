@@ -36,4 +36,5 @@
     <string name="project_list_title">Project List</string>
     <string name="project_details">Project Details</string>
     <string name="uri_picker_label">Pick a file</string>
+    <string name="loading_audio_tip">Loading audio...</string>
 </resources>
