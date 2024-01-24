@@ -26,9 +26,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -89,15 +89,17 @@ class ProjectListViewModel @Inject constructor(
 
     fun previewProject(id: Int?) = viewModelScope.launch {
         navigationPreferencesRepository.saveProjectId(id)
-        id?.let {
-            mapRelationToUIState(it).collect {
+        if (id != null) {
+            mapRelationToUIState(id).collect {
                 _detailsUIState.emit(it)
             }
+        } else {
+            _detailsUIState.emit(null)
         }
     }
 
     private suspend fun mapRelationToUIState(id: Int): Flow<ProjectItemDetailsUIState> {
-        return projectRepository.getProjectRelation(id).map { relation ->
+        val project = projectRepository.getProjectRelation(id).map { relation ->
             ProjectItemDetailsUIState(
                 id = relation.project.id,
                 thumbnailUri = Uri.EMPTY,
@@ -110,9 +112,16 @@ class ProjectListViewModel @Inject constructor(
                 metaData = relation.metaData.map { it.toMetaDataModel() },
                 ranks = relation.ranks.map { it.toRankModel() }
             )
-        }.transform { project ->
+        }.first()
+
+        return flow {
             emit(project)
-            emit(project.copy(audio = getAudioFileUseCase(id).first()))
+
+            // TODO: Change mental model of this monstrosity
+            val audio = getAudioFileUseCase(id).first()
+            if (_detailsUIState.value != null) {
+                emit(project.copy(audio = audio))
+            }
         }
     }
 }
