@@ -11,12 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.funnypaper.simme.R
 import com.funnypaper.simme.ui.navigation.SIMMENavigationWrapper
 import com.funnypaper.simme.ui.theme.SIMMETheme
 
@@ -41,7 +40,7 @@ fun GlobalPropertiesScreen(
                 )
             }
         },
-        isNavigationRoot = currentRoute == "Properties",
+        isNavigationRoot = currentRoute == GlobalPropertiesDestination.PROPERTIES,
         navHostController = navHostController,
         modifier = modifier
     ) {
@@ -50,7 +49,7 @@ fun GlobalPropertiesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .padding(dimensionResource(id = R.dimen.pane_spacing))
+                .padding(8.dp)
         )
     }
 }

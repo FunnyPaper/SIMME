@@ -39,15 +39,15 @@ fun GlobalPropertiesList(
             .verticalScroll(rememberScrollState())
     ) {
         GlobalPropertiesListItem(
-            onClick = { onItemClick("Audio") }
+            onClick = { onItemClick(GlobalPropertiesDestination.TIMING) }
         ) {
-            Text(text = "Audio")
+            Text(text = GlobalPropertiesDestination.TIMING)
         }
 
         GlobalPropertiesListItem(
-            onClick = { onItemClick("Header") }
+            onClick = { onItemClick(GlobalPropertiesDestination.AUDIO) }
         ) {
-            Text(text = "Header")
+            Text(text = GlobalPropertiesDestination.AUDIO)
         }
     }
 }

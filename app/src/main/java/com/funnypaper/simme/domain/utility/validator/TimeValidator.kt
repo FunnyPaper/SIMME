@@ -10,4 +10,4 @@ class TimeValidator(
 ) : IValidator<String> by
 // Delegate implementation to CompositeValidator<T>
 // This composite validator consist of regex and empty string validators
-RegexValidator(regex, pattern, patternTip) + EmptyStringValidator()
+RegexValidator<String>(regex, pattern, patternTip) + EmptyStringValidator()

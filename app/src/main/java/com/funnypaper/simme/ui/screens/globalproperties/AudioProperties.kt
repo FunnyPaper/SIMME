@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AudioProperties(
+    modifier: Modifier = Modifier,
     audioViewModel: AudioPropertiesViewModel = hiltViewModel<AudioPropertiesViewModel>(),
 ) {
     val audioState by audioViewModel.state.collectAsState()

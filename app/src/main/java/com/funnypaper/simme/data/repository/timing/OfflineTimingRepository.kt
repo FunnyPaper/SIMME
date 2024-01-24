@@ -10,10 +10,16 @@ class OfflineTimingRepository @Inject constructor(
 ) : IDataTimingRepository {
     override fun getTiming(id: Int): Flow<TimingEntity> =
         timingDao.getTimingById(id)
+
     override suspend fun updateTiming(value: TimingEntity) =
         timingDao.update(value)
+
     override suspend fun insertTiming(value: TimingEntity): Long =
         timingDao.insert(value)
+
     override suspend fun deleteTiming(value: TimingEntity) =
         timingDao.delete(value)
+
+    override fun getTimingByProjectId(id: Int): Flow<TimingEntity?> =
+        timingDao.getTimingByProjectId(id)
 }

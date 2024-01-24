@@ -15,27 +15,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.funnypaper.simme.domain.utility.format.TimeFormat
-import com.funnypaper.simme.domain.utility.validator.TimeValidator
+import com.funnypaper.simme.domain.utility.validator.RegexValidator
 import com.funnypaper.simme.domain.utility.validator.ValidationResult
 import com.funnypaper.simme.domain.utility.validator.validateWith
 import com.funnypaper.simme.ui.theme.SIMMETheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeField(
+fun NumberField(
     value: String,
     modifier: Modifier = Modifier,
-    onValueChange: (ValidationResult<String>) -> Unit = {},
     label: @Composable () -> Unit = {},
-    timeFormat: TimeFormat = TimeFormat.Full,
+    onValueChange: (ValidationResult<String>) -> Unit = {},
     imeAction: ImeAction = ImeAction.Done,
 ) {
     val validator = remember {
-        TimeValidator(
-            timeFormat.regex,
-            timeFormat.pattern,
-            timeFormat.patternTip
+        RegexValidator<String>(
+            regex = Regex("""^\d+$"""),
+            pattern = "d+",
+            patternTip = "Min number length is 1"
         )
     }
 
@@ -46,7 +44,7 @@ fun TimeField(
     OutlinedTextField(
         label = label,
         placeholder = {
-            Text(text = timeFormat.pattern)
+            Text(text = validator.pattern)
         },
         supportingText = {
             Column(
@@ -61,7 +59,7 @@ fun TimeField(
         },
         isError = !validationResult.isValid,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Ascii,
+            keyboardType = KeyboardType.Number,
             imeAction = imeAction
         ),
         modifier = modifier
@@ -70,10 +68,10 @@ fun TimeField(
 
 @Preview
 @Composable
-private fun TimeFieldPreview() {
+private fun NumberFieldPreview() {
     SIMMETheme {
         Surface {
-            TimeField(
+            NumberField(
                 value = "",
                 modifier = Modifier.fillMaxWidth()
             )
