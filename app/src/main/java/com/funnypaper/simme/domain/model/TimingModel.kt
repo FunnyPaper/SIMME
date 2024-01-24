@@ -17,3 +17,12 @@ fun TimingEntity.toTimingModel() =
         offset = offset,
         millis = millis
     ).apply { id = this@toTimingModel.id }
+
+fun TimingModel.toTimingEntity(projectId: Int) =
+    TimingEntity(
+        id = id,
+        bpm = bpm,
+        offset = offset,
+        millis = millis,
+        projectId = projectId
+    )

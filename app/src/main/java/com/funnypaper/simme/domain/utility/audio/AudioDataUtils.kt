@@ -1,30 +1,37 @@
 package com.funnypaper.simme.domain.utility.audio
 
+import android.content.Context
 import android.media.MediaCodec
 import android.media.MediaCodec.BufferInfo
 import android.media.MediaExtractor
 import android.media.MediaFormat
+import android.net.Uri
 import com.funnypaper.simme.domain.extensions.getAudioTrackIndex
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlin.math.sqrt
 
 fun shrinkArray(array: List<Float>, binCount: Int): List<Float> {
-    val newArray = mutableListOf<Float>()
-    val n = (array.size / binCount.toFloat()).toInt()
-
-    for(i in 0..<binCount) {
-        val sum = array.slice((i * n)..<((i + 1) * n)).sumOf {
-            it.toLong().let { it * it }
+    return try {
+        val newArray = mutableListOf<Float>()
+        val n = (array.size / binCount.toFloat()).toInt()
+        for (i in n..<array.size step n) {
+            val sum = array.slice((i - n)..<i).sumOf {
+                it.toLong().let { it * it }
+            }
+            val mean = sum / n.toDouble()
+            newArray.add(sqrt(mean).toFloat())
         }
-        val mean = sum / n.toDouble()
-        newArray.add(sqrt(mean).toFloat())
+        newArray
+    } catch (e: Exception) {
+        e.printStackTrace()
+        emptyList()
     }
-
-    return newArray
 }
 
-suspend fun getPCMData(mediaExtractor: MediaExtractor): Flow<List<Float>> = flow {
+fun getPCMData(context: Context, uri: Uri): List<Float> {
+    val mediaExtractor = MediaExtractor().apply {
+        setDataSource(context, uri, emptyMap())
+    }
+
     // Select audio track
     val audioTrackIndex = mediaExtractor.getAudioTrackIndex()
     mediaExtractor.selectTrack(audioTrackIndex)
@@ -39,50 +46,76 @@ suspend fun getPCMData(mediaExtractor: MediaExtractor): Flow<List<Float>> = flow
     // Process audio file content
     val pcm = mutableListOf<Float>()
     val bufferInfo = BufferInfo()
-    while(!processInputBuffer(mediaCodec, mediaExtractor)) {
-        processOutputBuffer(mediaCodec, bufferInfo, pcm)
+
+    try {
+        val inputThreads = Thread { processInputBuffer(mediaCodec, mediaExtractor) }
+            .apply { start() }
+
+        val outputThreads = Thread { processOutputBuffer(mediaCodec, bufferInfo, pcm) }
+            .apply { start() }
+
+        inputThreads.join()
+        outputThreads.join()
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 
     // Release resources
     mediaCodec.stop()
     mediaCodec.release()
+    mediaExtractor.release()
 
-    emit(pcm)
+    return pcm
 }
 
-private fun processInputBuffer(codec: MediaCodec, extractor: MediaExtractor): Boolean {
-    // Request next input buffer
-    val inputBufferIndex = codec.dequeueInputBuffer(-1)
-    if(inputBufferIndex >= 0) {
-        // Get input buffer and feed it with MediaExtractor data
-        val inputBuffer = codec.getInputBuffer(inputBufferIndex)!!
-        val sampleSize = extractor.readSampleData(inputBuffer, 0)
+private fun processInputBuffer(codec: MediaCodec, extractor: MediaExtractor) {
+    while (true) {
+        // Request next input buffer
+        val inputBufferIndex = codec.dequeueInputBuffer(-1)
+        if (inputBufferIndex >= 0) {
+            // Get input buffer and feed it with MediaExtractor data
+            val inputBuffer = codec.getInputBuffer(inputBufferIndex)!!
+            val sampleSize = synchronized(extractor) {
+                extractor.readSampleData(inputBuffer, 0)
+            }
 
-        if(sampleSize >= 0) {
-            codec.queueInputBuffer(inputBufferIndex, 0, sampleSize, extractor.sampleTime, 0)
-            extractor.advance()
-        } else {
-            codec.queueInputBuffer(inputBufferIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
-            return true
+            if (sampleSize >= 0) {
+                codec.queueInputBuffer(inputBufferIndex, 0, sampleSize, extractor.sampleTime, 0)
+                extractor.advance()
+            } else {
+                codec.queueInputBuffer(
+                    inputBufferIndex,
+                    0,
+                    0,
+                    0,
+                    MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                )
+                break
+            }
         }
     }
-
-    return false
 }
 
 private fun processOutputBuffer(codec: MediaCodec, bufferInfo: BufferInfo, pcm: MutableList<Float>) {
-    // Request next output buffer
-    val outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, -1)
-    if (outputBufferIndex >= 0) {
-        // Get output buffer and write it's content to byte array
-        val outputBuffer = codec.getOutputBuffer(outputBufferIndex)!!
-        val audioData = ByteArray(bufferInfo.size)
-        outputBuffer.get(audioData)
+    while (true) {
+        // Request next output buffer
+        val outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, -1)
+        if (outputBufferIndex >= 0) {
+            // Get output buffer and write it's content to byte array
+            val outputBuffer = codec.getOutputBuffer(outputBufferIndex)!!
+            if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
+                // End of stream
+                break
+            } else {
+                val audioData = ByteArray(bufferInfo.size)
+                outputBuffer.get(audioData)
 
-        codec.releaseOutputBuffer(outputBufferIndex, false)
+                // Average processed sample
+                val sum = audioData.sum().toFloat()
+                pcm.add((sum / audioData.size))
+            }
 
-        // Average processed sample
-        val sum = audioData.sum().toFloat()
-        pcm.add((sum / audioData.size))
+            codec.releaseOutputBuffer(outputBufferIndex, false)
+        }
     }
 }

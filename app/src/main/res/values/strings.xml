@@ -35,4 +35,12 @@
     <string name="editor_root_title">Editor Root</string>
     <string name="project_list_title">Project List</string>
     <string name="project_details">Project Details</string>
+    <string name="uri_picker_label">Pick a file</string>
+    <string name="loading_audio_tip">Loading audio...</string>
+    <string name="loading_timing_tip">Loading timing...</string>
+    <string name="timing_bpm_label">Bpm</string>
+    <string name="timing_duration_label">Duration</string>
+    <string name="timing_offset_label">Offset</string>
+    <string name="save_button">Save</string>
+    <string name="discard_button">Discard</string>
 </resources>

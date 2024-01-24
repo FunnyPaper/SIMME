@@ -2,13 +2,19 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="EditorBoardPreview">
+      <entry key="BoardPropertyEditorPreview">
         <State />
       </entry>
       <entry key="ProjectListScreenCompactPreview">
         <State />
       </entry>
       <entry key="ProjectListScreenExpandedPreview">
+        <State />
+      </entry>
+      <entry key="TimeFieldPreview">
+        <State />
+      </entry>
+      <entry key="UriPickerPreview">
         <State />
       </entry>
       <entry key="app">

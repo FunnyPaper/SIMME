@@ -1,27 +1,14 @@
 package com.funnypaper.simme.ui.shared.audiovisualizer
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
@@ -30,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
@@ -44,79 +30,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.funnypaper.simme.domain.extensions.getFilename
 import com.funnypaper.simme.domain.extensions.scaleNumber
 import com.funnypaper.simme.domain.utility.audio.shrinkArray
-
-@Composable
-fun AudioVisualizer(
-    modifier: Modifier = Modifier
-) {
-    val viewModel = hiltViewModel<MediaPlayerViewModel>()
-    val state = viewModel.mediaPlayerUIState
-    val context = LocalContext.current
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
-        viewModel.setUri(it)
-    }
-
-    var playAfterDrag by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = state.uri?.getFilename(context.contentResolver).toString())
-
-        Button(onClick = {
-            launcher.launch(arrayOf("audio/mpeg"))
-        }) {
-            Text(text = "Select Audio File")
-        }
-
-        Row {
-            IconButton(onClick = viewModel::resume) {
-                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = null)
-            }
-            
-            IconButton(onClick = viewModel::pause) {
-                Icon(imageVector = Icons.Filled.Pause, contentDescription = null)
-            }
-        }
-
-        if(!state.isPcmLoading) {
-            AudioVisualizer(
-                data = state.pcm,
-                progression = state.progression,
-                paused = !state.isPlaying,
-                onHorizontalDragStart = {
-                    playAfterDrag = state.isPlaying
-                    viewModel.pause()
-                    viewModel.updateProgression(it.coerceIn(0f, 1f))
-                },
-                onHorizontalDragEnd = {
-                    if(playAfterDrag) {
-                        viewModel.resume()
-                    }
-                },
-                onHorizontalDrag = { dragAmount ->
-                    viewModel.updateProgression(
-                        state.progression + dragAmount.coerceIn(-state.progression, 1f - state.progression)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(0.9f)
-            )
-        } else {
-            Text(text = "PCM LOADING...")
-        }
-    }
-}
 
 @Composable
 fun AudioVisualizer(
@@ -133,7 +51,7 @@ fun AudioVisualizer(
     paused: Boolean = true,
     shape: Shape = AudioVisualizerDefaults.Shape,
     contentPadding: PaddingValues = AudioVisualizerDefaults.ContentPadding,
-    colors: AudioVisualizerColors = AudioVisualizerDefaults.colors()
+    colors: AudioVisualizerColors = AudioVisualizerDefaults.colors(),
 ) {
     // Colors
     val containerColor = colors.containerColor(paused = paused).value
@@ -145,8 +63,6 @@ fun AudioVisualizer(
 
     // Bins
     val binData = remember(data) { shrinkArray(data, binCount) }
-    val min = remember(binData) { binData.min() }
-    val max = remember(binData) { binData.max() }
 
     // Canvas
     var size by remember { mutableStateOf(Size.Zero) }
@@ -165,10 +81,10 @@ fun AudioVisualizer(
     }
 
     // Cache transformations
-    val binPaths = remember(binData, gapSize, min, max, halfHeight) {
+    val binPaths = remember(binData, gapSize, halfHeight) {
         binData.mapIndexed { index, value ->
             val x = (index + 1) * gapSize
-            val y = value.scaleNumber(min, max, 1f, halfHeight)
+            val y = value.scaleNumber(binData.min(), binData.max(), 1f, halfHeight)
             val tt1 = transformation.map(Offset(x, y))
             val tt2 = transformation.map(Offset(x, -y))
 
@@ -236,6 +152,7 @@ fun AudioVisualizer(
         }
     }
 }
+
 @Immutable
 class AudioVisualizerColors internal constructor(
     private val resumedContainerColor: Color,

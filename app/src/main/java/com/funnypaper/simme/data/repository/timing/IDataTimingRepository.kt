@@ -8,4 +8,5 @@ interface IDataTimingRepository {
     suspend fun updateTiming(value: TimingEntity)
     suspend fun insertTiming(value: TimingEntity): Long
     suspend fun deleteTiming(value: TimingEntity)
+    fun getTimingByProjectId(id: Int): Flow<TimingEntity?>
 }

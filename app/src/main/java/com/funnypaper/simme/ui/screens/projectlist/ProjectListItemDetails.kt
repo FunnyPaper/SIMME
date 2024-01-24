@@ -22,13 +22,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Adjust
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.Height
-import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.filled.Start
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,8 +45,6 @@ import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -324,10 +321,14 @@ private fun AudioSection(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
-                AudioVisualizer(
-                    data = audio.pcm,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (audio.pcm.isEmpty()) {
+                    CircularProgressIndicator()
+                } else {
+                    AudioVisualizer(
+                        data = audio.pcm,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             } else {
                 Text(text = stringResource(id = R.string.null_audio))
             }

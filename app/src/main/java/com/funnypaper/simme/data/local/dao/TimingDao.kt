@@ -12,4 +12,7 @@ interface TimingDao : ICRUDDao<TimingEntity>  {
 
     @Query("SELECT * FROM timing")
     fun getAllTimings(): Flow<List<TimingEntity>>
+
+    @Query("SELECT * FROM timing WHERE project_id = :value")
+    fun getTimingByProjectId(value: Int): Flow<TimingEntity?>
 }

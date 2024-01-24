@@ -2,7 +2,6 @@ package com.funnypaper.simme.ui.screens.projectlist
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.funnypaper.simme.data.local.relation.ProjectRelation
@@ -17,6 +16,8 @@ import com.funnypaper.simme.domain.model.toMetaDataModel
 import com.funnypaper.simme.domain.model.toRankModel
 import com.funnypaper.simme.domain.model.toTimingModel
 import com.funnypaper.simme.domain.repository.IProjectRepository
+import com.funnypaper.simme.domain.repository.NavigationPreferencesRepository
+import com.funnypaper.simme.domain.usecase.GetAudioFileUseCase
 import com.funnypaper.simme.domain.utility.json.SIMMEJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,7 +35,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ProjectListViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val getAudioFileUseCase: GetAudioFileUseCase,
     private val projectRepository: IProjectRepository,
+    private val navigationPreferencesRepository: NavigationPreferencesRepository,
 ) : ViewModel() {
     private val _detailsUIState: MutableStateFlow<ProjectItemDetailsUIState?> =
         MutableStateFlow(null)
@@ -84,13 +88,18 @@ class ProjectListViewModel @Inject constructor(
     }
 
     fun previewProject(id: Int?) = viewModelScope.launch {
-        _detailsUIState.value = id?.let {
-            mapRelationToUIState(it).first()
+        navigationPreferencesRepository.saveProjectId(id)
+        if (id != null) {
+            mapRelationToUIState(id).collect {
+                _detailsUIState.emit(it)
+            }
+        } else {
+            _detailsUIState.emit(null)
         }
     }
 
-    private fun mapRelationToUIState(id: Int): Flow<ProjectItemDetailsUIState> {
-        return projectRepository.getProjectRelation(id).map { relation ->
+    private suspend fun mapRelationToUIState(id: Int): Flow<ProjectItemDetailsUIState> {
+        val project = projectRepository.getProjectRelation(id).map { relation ->
             ProjectItemDetailsUIState(
                 id = relation.project.id,
                 thumbnailUri = Uri.EMPTY,
@@ -103,6 +112,16 @@ class ProjectListViewModel @Inject constructor(
                 metaData = relation.metaData.map { it.toMetaDataModel() },
                 ranks = relation.ranks.map { it.toRankModel() }
             )
+        }.first()
+
+        return flow {
+            emit(project)
+
+            // TODO: Change mental model of this monstrosity
+            val audio = getAudioFileUseCase(id).first()
+            if (_detailsUIState.value != null) {
+                emit(project.copy(audio = audio))
+            }
         }
     }
 }
